@@ -920,17 +920,17 @@ def show_dashboard():
         gauge_col1, gauge_col2 = st.columns(2)
         with gauge_col1:
             st.plotly_chart(create_enhanced_gauge(predictions.get('Compliance_Score', 0), "Compliance"), 
-                          use_container_width=True)
+                          use_container_width=stretch)
         with gauge_col2:
             st.plotly_chart(create_enhanced_gauge(predictions.get('Audit_Readiness_Score', 0), "Audit Readiness"), 
-                          use_container_width=True)
+                          use_container_width=stretch)
         
         st.markdown('</div>', unsafe_allow_html=True)
     
     with col_viz2:
         st.markdown('<div class="section-container">', unsafe_allow_html=True)
         st.subheader("🕸 Risk Profile Radar")
-        st.plotly_chart(create_radar_chart(predictions), use_container_width=True)
+        st.plotly_chart(create_radar_chart(predictions), use_container_width=stretch)
         st.markdown('</div>', unsafe_allow_html=True)
     
     # AI Insights and Recommendations
@@ -1201,15 +1201,15 @@ def show_risk_assessment():
         # Submit button
         col1, col2, col3, col4 = st.columns(4)
         with col1:
-            submitted = st.form_submit_button("🚀 Generate Assessment", type="primary", use_container_width=True)
+            submitted = st.form_submit_button("🚀 Generate Assessment", type="primary", use_container_width=stretch)
         with col2:
-            if st.form_submit_button("💾 Save Assessment", use_container_width=True):
+            if st.form_submit_button("💾 Save Assessment", use_container_width=stretch):
                 st.success("✅ Assessment saved to your portfolio!")
         with col3:
-            if st.form_submit_button("📅 Schedule Review", use_container_width=True):
+            if st.form_submit_button("📅 Schedule Review", use_container_width=stretch):
                 st.success("⏰ Follow-up review scheduled!")
         with col4:
-            if st.form_submit_button("🔄 New Assessment", use_container_width=True):
+            if st.form_submit_button("🔄 New Assessment", use_container_width=stretch):
                 st.session_state.risk_assessment = None
                 st.rerun()
     
@@ -1398,7 +1398,7 @@ def show_benchmarking():
         xaxis_title="Score"
     )
     
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=stretch)
     st.markdown('</div>', unsafe_allow_html=True)
 
 def show_model_insights():
@@ -1426,7 +1426,7 @@ def show_model_insights():
             })
         
         metrics_df = pd.DataFrame(metrics_data)
-        st.dataframe(metrics_df, use_container_width=True, hide_index=True)
+        st.dataframe(metrics_df, use_container_width=stretch, hide_index=True)
         
         # Model performance visualization
         perf_col1, perf_col2 = st.columns(2)
@@ -1449,7 +1449,7 @@ def show_model_insights():
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)"
             )
-            st.plotly_chart(fig_r2, use_container_width=True)
+            st.plotly_chart(fig_r2, use_container_width=stretch)
         
         with perf_col2:
             mae_scores = [float(metrics.get('test_mae', 0)) for metrics in engine.model_metadata.values()]
@@ -1468,7 +1468,7 @@ def show_model_insights():
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)"
             )
-            st.plotly_chart(fig_mae, use_container_width=True)
+            st.plotly_chart(fig_mae, use_container_width=stretch)
     
     st.markdown('</div>', unsafe_allow_html=True)
     
@@ -1492,7 +1492,7 @@ def show_model_insights():
                     f'Top Features - {importance_model.replace("_", " ")}'
                 )
                 if fig:
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, use_container_width=stretch)
                 
                 # Show raw data
                 with st.expander("View Raw Feature Importance Data"):
@@ -1501,7 +1501,7 @@ def show_model_insights():
                     else:
                         imp_df = pd.DataFrame(importance_data)
                     st.dataframe(imp_df.sort_values('Importance', ascending=False), 
-                               use_container_width=True, hide_index=True)
+                               use_container_width=stretch, hide_index=True)
     else:
         st.info("Feature importance data not available. This may indicate the model is using mock data for demonstration.")
     
@@ -1682,7 +1682,7 @@ def show_incident_simulation():
             help="Expected time to full system recovery"
         )
     
-    if st.button("🚀 Run Simulation", type="primary", use_container_width=True):
+    if st.button("🚀 Run Simulation", type="primary", use_container_width=stretch):
         with st.spinner("Running AI-powered incident simulation..."):
             time.sleep(2)
             
