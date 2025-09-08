@@ -1499,45 +1499,38 @@ def show_model_insights():
                     # FIXED CODE - replace the existing feature importance display section
 # Normalize the importance data to ensure consistent column names
 if importance_data:
-    if isinstance(importance_data[0], tuple):
-        # If data is list of tuples: [(feature1, value1), (feature2, value2), ...]
+    # Check if it's a list of lists with 2 elements (feature, value)
+    if all(isinstance(item, (list, tuple)) and len(item) == 2 for item in importance_data):
+        # Create DataFrame with proper column names
         imp_df = pd.DataFrame(importance_data, columns=['Feature', 'Importance'])
-    elif isinstance(importance_data[0], dict):
-        # If data is list of dicts: [{'feature': 'f1', 'importance': 0.5}, ...]
-        imp_df = pd.DataFrame(importance_data)
-        # Standardize column names
-        if 'Importance' not in imp_df.columns:
-            if 'importance' in imp_df.columns:
-                imp_df.rename(columns={'importance': 'Importance'}, inplace=True)
-            elif 'value' in imp_df.columns:
-                imp_df.rename(columns={'value': 'Importance'}, inplace=True)
-            elif 'score' in imp_df.columns:
-                imp_df.rename(columns={'score': 'Importance'}, inplace=True)
-            elif 0 in imp_df.columns:  # Sometimes it's just numeric columns
-                imp_df.rename(columns={0: 'Importance'}, inplace=True)
-        
-        # Ensure we have a 'Feature' column
-        if 'Feature' not in imp_df.columns:
-            if 'feature' in imp_df.columns:
-                imp_df.rename(columns={'feature': 'Feature'}, inplace=True)
-            elif 'FeatureName' in imp_df.columns:
-                imp_df.rename(columns={'FeatureName': 'Feature'}, inplace=True)
     else:
-        # If data is just a list of values
-        imp_df = pd.DataFrame({
-            'Feature': list(range(len(importance_data))),
-            'Importance': importance_data
-        })
+        # Fallback for unexpected data structures
+        logger.warning("Unexpected feature importance data structure")
+        imp_df = pd.DataFrame(importance_data)
+        # Try to identify importance column
+        if 'value' in imp_df.columns:
+            imp_df = imp_df.rename(columns={'value': 'Importance'})
+        elif 1 in imp_df.columns:
+            imp_df = imp_df.rename(columns={1: 'Importance'})
+        
+        # Ensure we have a Feature column
+        if 'feature' in imp_df.columns:
+            imp_df = imp_df.rename(columns={'feature': 'Feature'})
+        elif 0 in imp_df.columns:
+            imp_df = imp_df.rename(columns={0: 'Feature'})
     
-    # Now sort and display - guaranteed to have 'Importance' column
-    st.dataframe(imp_df.sort_values('Importance', ascending=False),
-                 width="stretch", hide_index=True)
+    # Only sort if 'Importance' column exists
+    if 'Importance' in imp_df.columns:
+        st.dataframe(imp_df.sort_values('Importance', ascending=False),
+                     width="stretch", hide_index=True)
+    else:
+        st.warning("Could not display feature importance - missing 'Importance' column")
+        st.dataframe(imp_df, width="stretch", hide_index=True)
 else:
     st.info("No feature importance data available for this model")
-    else:
-        st.info("Feature importance data not available. This may indicate the model is using mock data for demonstration.")
-    
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.info("Feature importance data not available. This may indicate the model is using mock data for demonstration.")
+
+st.markdown('</div>', unsafe_allow_html=True)
 
 def show_settings():
     """Enhanced settings page"""
