@@ -394,12 +394,12 @@ class EnhancedGRCScoreEngine:
     
     def _load_models(self):
         model_files = {
-            'Compliance_Score': 'compliance_score_model.pkl',
-            'Financial_Risk_Score': 'financial_risk_score_model.pkl',
-            'Asset_Risk_Index': 'asset_risk_index_model.pkl',
-            'Audit_Readiness_Score': 'audit_readiness_score_model.pkl',
-            'Incident_Impact_Score': 'incident_impact_score_model.pkl',
-            'Composite_Risk_Score': 'composite_risk_score_model.pkl'
+            'Compliance_Score': 'compliance_score_model.joblib',
+            'Financial_Risk_Score': 'financial_risk_score_model.joblib',
+            'Asset_Risk_Index': 'asset_risk_index_model.joblib',
+            'Audit_Readiness_Score': 'audit_readiness_score_model.joblib',
+            'Incident_Impact_Score': 'incident_impact_score_model.joblib',
+            'Composite_Risk_Score': 'composite_risk_score_model.joblib'
         }
         
         for score_name, filename in model_files.items():
