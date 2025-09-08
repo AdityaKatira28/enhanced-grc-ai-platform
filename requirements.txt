@@ -4,7 +4,7 @@ pandas==2.3.2          # bumped
 numpy==2.3.2
 
 # Machine Learning and Scientific Computing
-scikit-learn==1.4.2
+scikit-learn==1.7.1
 joblib==1.5.2
 
 # Visualization Libraries
