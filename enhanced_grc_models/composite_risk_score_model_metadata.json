@@ -1,0 +1,17 @@
+{
+  "model_name": "composite_risk_score_model",
+  "created_at": "2025-09-08T12:27:01.218848",
+  "scikit_learn_version": "1.7.1",
+  "model_type": "<class 'sklearn.pipeline.Pipeline'>",
+  "training_metrics": {
+    "train_mse": 0.08490638638720682,
+    "test_mse": 0.36063337519662864,
+    "train_r2": 0.9979788405044833,
+    "test_r2": 0.9907587566672176,
+    "test_mae": 0.45230791671556575,
+    "best_config": "GradientBoosting_{'regressor__subsample': 0.8, 'regressor__n_estimators': 200, 'regressor__max_depth': 6, 'regressor__learning_rate': 0.1}",
+    "best_cv_score": 0.9879102313305029,
+    "cv_r2_mean": 0.9892768747038782,
+    "cv_r2_std": 0.0005086365073019988
+  }
+}

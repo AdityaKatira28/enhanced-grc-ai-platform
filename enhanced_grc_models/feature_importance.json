@@ -2,373 +2,373 @@
   "Compliance_Score": [
     [
       "Control_Status_Distribution_Compliant",
-      0.5574416196407921
+      0.5602727101680555
     ],
     [
       "Control_Status_Distribution_Partially_Compliant",
-      0.17038676307623996
+      0.17064612125185877
     ],
     [
       "Compliance_Maturity_Level",
-      0.07663162167169109
+      0.07745408854944255
     ],
     [
       "Audit_Preparation_Score",
-      0.05315215710981347
+      0.04772236865874874
     ],
     [
       "Industry_Sector_Healthcare",
-      0.028139424749694903
+      0.028369753464873967
     ],
     [
       "Industry_Sector_Technology",
-      0.02723263209398316
+      0.02643421181291469
     ],
     [
       "Industry_Sector_Financial-Services",
-      0.013044335412018247
+      0.013694449365481831
     ],
     [
       "Control_Status_Distribution_Non_Compliant",
-      0.010268342956310466
+      0.010815007640271844
     ],
     [
       "Control_Status_Distribution_In_Progress",
-      0.009245973862151752
+      0.009134321578328178
     ],
     [
       "Applicable_Compliance_Frameworks_ISO27001",
-      0.007130236314431814
+      0.0072312356455977245
     ],
     [
       "Control_Testing_Frequency_Weekly",
-      0.006117138541108479
+      0.0062179173847665605
     ],
     [
       "Industry_Sector_Government",
-      0.004687104661492697
+      0.005160249945432248
     ],
     [
       "Applicable_Compliance_Frameworks_CIS-Controls",
-      0.004603147590718543
-    ],
-    [
-      "Control_Status_Distribution_Not_Assessed",
-      0.004421014013250485
+      0.004697650182244691
     ],
     [
       "Applicable_Compliance_Frameworks_SOC2",
-      0.0044002956797985025
+      0.00429077340437704
+    ],
+    [
+      "Control_Status_Distribution_Not_Assessed",
+      0.004101682873406124
     ]
   ],
   "Financial_Risk_Score": [
     [
       "Business_Impact",
-      0.892769095307993
+      0.8927690953079916
     ],
     [
       "Industry_Sector_Financial-Services",
-      0.03911414228950239
+      0.039114136437229836
     ],
     [
       "Industry_Sector_Healthcare",
-      0.025813411214916763
+      0.02581341338393637
     ],
     [
       "Industry_Sector_Government",
-      0.01027914779687419
+      0.01027913615585591
     ],
     [
       "Industry_Sector_Energy",
-      0.009690891395322358
+      0.009690901497958253
     ],
     [
       "Industry_Sector_Defense",
-      0.007656490868892286
+      0.007656473101647993
     ],
     [
       "Industry_Sector_Education",
-      0.0032837179376469304
+      0.0032836555757953913
     ],
     [
       "Industry_Sector_Manufacturing",
-      0.0030637010404840387
+      0.003063728927539005
     ],
     [
       "Industry_Sector_Pharmaceuticals",
-      0.0024040774954545447
+      0.0024036333728616483
     ],
     [
       "Industry_Sector_Retail",
-      0.0017407963521940413
+      0.001740223151898057
     ],
     [
       "Industry_Sector_Transportation",
-      0.0016355211902339603
+      0.0016358499176269943
     ],
     [
       "Industry_Sector_Insurance",
-      0.0008755123907911042
+      0.0008758338920986879
     ],
     [
       "Industry_Sector_Technology",
-      0.0003679736177229299
+      0.00036796670277879887
     ],
     [
       "Risk_Exposure_Ratio",
-      0.00029738136160236257
+      0.00029502929652169867
     ],
     [
       "Annual_Revenue",
-      0.0002825608353436796
+      0.000283460023633949
     ]
   ],
   "Asset_Risk_Index": [
     [
       "Data_Sensitivity_Classification",
-      0.768597844793334
+      0.7668014749068022
     ],
     [
       "Asset_Type_Mobile-Device",
-      0.022403354959775502
+      0.02194024303228787
     ],
     [
       "Industry_Sector_Financial-Services",
-      0.020524343323661636
+      0.020889365825812717
     ],
     [
       "Asset_Type_Payment-System",
-      0.020069658161907217
+      0.020034976412820267
     ],
     [
       "Asset_Type_SCADA-System",
-      0.019618611403902295
+      0.019924679794225502
     ],
     [
       "Asset_Type_Database",
-      0.018872851853219103
+      0.018819480168928836
     ],
     [
       "Asset_Type_Data-Store",
-      0.013180583020879323
+      0.013555661503139749
     ],
     [
       "Asset_Type_Endpoint",
-      0.013089419666466354
+      0.01335504574421587
     ],
     [
       "Industry_Sector_Healthcare",
-      0.01044586789520446
+      0.01018004018570047
     ],
     [
       "Asset_Type_Container",
-      0.008316584871724443
+      0.008294832092719957
     ],
     [
       "Asset_Type_E-Commerce-Platform",
-      0.007487295775515004
+      0.007588694670781999
     ],
     [
       "Industry_Sector_Manufacturing",
-      0.006101633127429705
+      0.006735382790952768
     ],
     [
       "Industry_Sector_Retail",
-      0.00517037597838925
-    ],
-    [
-      "Compliance_Maturity_Level",
-      0.005098622276939482
+      0.005662513679219605
     ],
     [
       "Geographic_Scope_US",
-      0.004669272205606898
+      0.005396989670189831
+    ],
+    [
+      "Compliance_Maturity_Level",
+      0.00454041124936228
     ]
   ],
   "Audit_Readiness_Score": [
     [
       "Repeat_Finding",
-      0.4592095579666316
+      0.4608846560563814
     ],
     [
       "Audit_Preparation_Score",
-      0.2636524213206135
+      0.27128804357290975
     ],
     [
       "Audit_Finding_Severity",
-      0.15211744478541012
+      0.14435618589726432
     ],
     [
       "Evidence_Freshness_Days",
-      0.12494107177195028
+      0.12337424146102258
     ],
     [
       "Control_Testing_Frequency_Annual",
-      9.186629460277907e-06
+      2.2159074574228143e-05
     ],
     [
-      "Business_Impact",
-      6.347817581379089e-06
+      "Asset_Type_Database",
+      2.1577977406949213e-05
     ],
     [
       "Penalty_Risk_Assessment",
-      6.245922253471266e-06
-    ],
-    [
-      "Compliance_Maturity_Level",
-      6.20353815858491e-06
+      7.820425531217364e-06
     ],
     [
       "Annual_Revenue",
-      4.8982896851025095e-06
+      5.272086522881647e-06
+    ],
+    [
+      "Compliance_Maturity_Level",
+      5.1120694738906325e-06
     ],
     [
       "Incident_Cost_Impact",
-      3.9066794654794644e-06
+      3.625632693829111e-06
     ],
     [
       "ROI_Potential",
-      3.844996388283742e-06
+      2.932226120094082e-06
+    ],
+    [
+      "Asset_Type_Server",
+      2.651015744954085e-06
     ],
     [
       "Control_Status_Distribution_In_Progress",
-      3.56762808276788e-06
-    ],
-    [
-      "Control_Testing_Frequency_Quarterly",
-      2.893478882652479e-06
-    ],
-    [
-      "Remediation_Cost",
-      2.2759160140661384e-06
+      2.3116718118356104e-06
     ],
     [
       "Risk_Exposure_Ratio",
-      2.2061880811610477e-06
+      1.8994840126178072e-06
+    ],
+    [
+      "Remediation_Cost",
+      1.6230876156529528e-06
     ]
   ],
   "Incident_Impact_Score": [
     [
       "Incident_Cost_Impact",
-      0.6882577468855224
+      0.7778669966852049
     ],
     [
       "Incident_Type_No_Incident",
-      0.24067778723145894
+      0.15269961513703093
     ],
     [
       "Incident_Notification_Compliance",
-      0.031348939337769985
+      0.02794595813142468
     ],
     [
       "Incident_Type_Access_Violation",
-      0.007624547376364826
+      0.008195740796332297
     ],
     [
       "Incident_Type_Unauthorized_Disclosure",
-      0.004510232335543605
+      0.004133554925442739
     ],
     [
       "Incident_Type_Patient_Data_Exposure",
-      0.00445765671668658
+      0.004044218255956844
     ],
     [
       "Incident_Type_Transaction_Error",
-      0.004199373953903632
+      0.004008215989777126
     ],
     [
       "Incident_Type_Data_Breach",
-      0.0037232647512051363
+      0.003404397775396965
     ],
     [
       "Incident_Type_Payment_Processing_Error",
-      0.0027289955024401243
-    ],
-    [
-      "Incident_Type_System_Outage",
-      0.0017259734747050086
-    ],
-    [
-      "Incident_Type_Student_Data_Exposure",
-      0.0015700834777662054
-    ],
-    [
-      "Applicable_Compliance_Frameworks_CIS-Controls",
-      0.001476839547798796
-    ],
-    [
-      "Applicable_Compliance_Frameworks_PCI-DSS",
-      0.0012624561023242705
+      0.002590237732878621
     ],
     [
       "Incident_Type_Privacy_Breach",
-      0.0010636644673753994
+      0.0016966163879854786
     ],
     [
-      "Incident_Type_Policy_Violation",
-      0.0009685748809887412
+      "Applicable_Compliance_Frameworks_CIS-Controls",
+      0.0015588191235252837
+    ],
+    [
+      "Incident_Type_Student_Data_Exposure",
+      0.0014931294349972823
+    ],
+    [
+      "Incident_Type_System_Outage",
+      0.0014690633625414368
+    ],
+    [
+      "Incident_Type_Compliance_Violation",
+      0.0013140419076160513
+    ],
+    [
+      "Applicable_Compliance_Frameworks_PCI-DSS",
+      0.0011891101394130431
     ]
   ],
   "Composite_Risk_Score": [
     [
       "Incident_Cost_Impact",
-      0.35532235810585144
+      0.289487018264154
     ],
     [
       "Incident_Type_No_Incident",
-      0.22412969233355196
+      0.28841329098986274
     ],
     [
       "Control_Status_Distribution_Compliant",
-      0.13128560125054095
+      0.13200466995472207
     ],
     [
       "Data_Sensitivity_Classification",
-      0.1040695992097703
+      0.10371200804124509
     ],
     [
       "Control_Status_Distribution_Partially_Compliant",
-      0.03829489129501357
+      0.038419311976449086
     ],
     [
       "Risk_Exposure_Ratio",
-      0.034770048924653435
+      0.0357574076013755
     ],
     [
       "Incident_Notification_Compliance",
-      0.020436265204668586
+      0.021206542724976248
     ],
     [
       "Audit_Preparation_Score",
-      0.020174250231543945
+      0.019375145451909503
     ],
     [
       "Control_Status_Distribution_Non_Compliant",
-      0.005920784349482649
+      0.005997374466610282
     ],
     [
       "Industry_Sector_Technology",
-      0.0036280810135596677
-    ],
-    [
-      "Compliance_Maturity_Level",
-      0.003425088841157189
+      0.003594150500216768
     ],
     [
       "Asset_Type_Mobile-Device",
-      0.0033993285012269216
+      0.003380571655094957
     ],
     [
       "Incident_Type_Patient_Data_Exposure",
-      0.0032428126741585518
+      0.0032958452512994708
     ],
     [
-      "Asset_Type_Payment-System",
-      0.002985527253882554
+      "Compliance_Maturity_Level",
+      0.003197392816509953
     ],
     [
       "Asset_Type_SCADA-System",
-      0.0029292089041241362
+      0.0030685203988175197
+    ],
+    [
+      "Asset_Type_Database",
+      0.0029545609619714996
     ]
   ]
 }
