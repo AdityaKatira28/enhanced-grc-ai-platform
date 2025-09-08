@@ -1,24 +1,24 @@
 # Core Streamlit and Data Processing
-streamlit==1.52.0
-pandas==2.2.3
-numpy==2.0.2
+streamlit==1.49.1          # Latest stable release
+pandas==2.3.2              # Released Aug 2025
+numpy==2.3.2               # Released Jul 2025
 
 # Machine Learning and Scientific Computing
-scikit-learn==1.5.2
-joblib==1.4.2
-scipy==1.14.1
+scikit-learn==1.7.1        # Released Jul 2025
+joblib==1.5.2              # Released Aug 2025
+scipy==1.16.1              # Released Jul 2025
 
 # Visualization Libraries
-plotly==5.25.0
-altair==5.4.1
-matplotlib==3.9.2
-seaborn==0.13.2
+plotly==6.3.0              # Released Aug 2025
+altair==5.4.1              # Still current
+matplotlib==3.10.6         # Released Aug 2025
+seaborn==0.13.2            # Still current
 
 # Streamlit Extensions
-streamlit-lottie==0.0.5
+streamlit-lottie==0.0.5    # Last release in 2023
 
 # HTTP Requests
-requests==2.32.3
+requests==2.32.5           # Released Aug 2025
 
 # Utilities
-pathlib2==2.3.7.post1
+pathlib2==2.3.7.post1      # No newer release
