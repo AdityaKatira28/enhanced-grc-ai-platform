@@ -1500,8 +1500,16 @@ def show_model_insights():
                         imp_df = pd.DataFrame(importance_data, columns=['Feature', 'Importance'])
                     else:
                         imp_df = pd.DataFrame(importance_data)
-                    st.dataframe(imp_df.sort_values('Importance', ascending=False), 
-                               use_container_width=True, hide_index=True)
+                        # Ensure we have the right column names
+                        if len(imp_df.columns) >= 2:
+                            imp_df.columns = ['Feature', 'Importance']
+                    
+                    # Check if Importance column exists before sorting
+                    if 'Importance' in imp_df.columns:
+                        st.dataframe(imp_df.sort_values('Importance', ascending=False), 
+                                   use_container_width=True, hide_index=True)
+                    else:
+                        st.dataframe(imp_df, use_container_width=True, hide_index=True)
     else:
         st.info("Feature importance data not available. This may indicate the model is using mock data for demonstration.")
     
