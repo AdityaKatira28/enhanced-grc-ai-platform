@@ -23,5 +23,5 @@ pathlib2==2.3.7.post1
 
 
 scipy==1.16.1         
-matplotlib==3.10.7     
-seaborn==0.13.3        
+matplotlib==3.10.6     
+seaborn==0.13.2        
