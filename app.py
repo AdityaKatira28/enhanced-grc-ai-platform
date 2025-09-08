@@ -1496,12 +1496,44 @@ def show_model_insights():
                 
                 # Show raw data
                 with st.expander("View Raw Feature Importance Data"):
-                    if isinstance(importance_data[0], tuple):
-                        imp_df = pd.DataFrame(importance_data, columns=['Feature', 'Importance'])
-                    else:
-                        imp_df = pd.DataFrame(importance_data)
-                    st.dataframe(imp_df.sort_values('Importance', ascending=False), 
-                               use_container_width=True, hide_index=True)
+                    # FIXED CODE - replace the existing feature importance display section
+# Normalize the importance data to ensure consistent column names
+if importance_data:
+    if isinstance(importance_data[0], tuple):
+        # If data is list of tuples: [(feature1, value1), (feature2, value2), ...]
+        imp_df = pd.DataFrame(importance_data, columns=['Feature', 'Importance'])
+    elif isinstance(importance_data[0], dict):
+        # If data is list of dicts: [{'feature': 'f1', 'importance': 0.5}, ...]
+        imp_df = pd.DataFrame(importance_data)
+        # Standardize column names
+        if 'Importance' not in imp_df.columns:
+            if 'importance' in imp_df.columns:
+                imp_df.rename(columns={'importance': 'Importance'}, inplace=True)
+            elif 'value' in imp_df.columns:
+                imp_df.rename(columns={'value': 'Importance'}, inplace=True)
+            elif 'score' in imp_df.columns:
+                imp_df.rename(columns={'score': 'Importance'}, inplace=True)
+            elif 0 in imp_df.columns:  # Sometimes it's just numeric columns
+                imp_df.rename(columns={0: 'Importance'}, inplace=True)
+        
+        # Ensure we have a 'Feature' column
+        if 'Feature' not in imp_df.columns:
+            if 'feature' in imp_df.columns:
+                imp_df.rename(columns={'feature': 'Feature'}, inplace=True)
+            elif 'FeatureName' in imp_df.columns:
+                imp_df.rename(columns={'FeatureName': 'Feature'}, inplace=True)
+    else:
+        # If data is just a list of values
+        imp_df = pd.DataFrame({
+            'Feature': list(range(len(importance_data))),
+            'Importance': importance_data
+        })
+    
+    # Now sort and display - guaranteed to have 'Importance' column
+    st.dataframe(imp_df.sort_values('Importance', ascending=False),
+                 width="stretch", hide_index=True)
+else:
+    st.info("No feature importance data available for this model")
     else:
         st.info("Feature importance data not available. This may indicate the model is using mock data for demonstration.")
     
