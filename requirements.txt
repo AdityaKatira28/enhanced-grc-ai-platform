@@ -1,0 +1,24 @@
+# Core Streamlit and Data Processing
+streamlit==1.52.0
+pandas==2.2.3
+numpy==2.0.2
+
+# Machine Learning and Scientific Computing
+scikit-learn==1.5.2
+joblib==1.4.2
+scipy==1.14.1
+
+# Visualization Libraries
+plotly==5.25.0
+altair==5.4.1
+matplotlib==3.9.2
+seaborn==0.13.2
+
+# Streamlit Extensions
+streamlit-lottie==0.0.5
+
+# HTTP Requests
+requests==2.32.3
+
+# Utilities
+pathlib2==2.3.7.post1

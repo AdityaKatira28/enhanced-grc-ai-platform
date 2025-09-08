@@ -1,0 +1,68 @@
+{
+  "Compliance_Score": {
+    "train_mse": 0.09804957207958886,
+    "test_mse": 0.3345632809933328,
+    "train_r2": 0.9994535891771725,
+    "test_r2": 0.9981139845196711,
+    "test_mae": 0.4332848123509871,
+    "best_config": "GradientBoosting_{'regressor__learning_rate': 0.1, 'regressor__max_depth': 6, 'regressor__n_estimators': 200, 'regressor__subsample': 0.9}",
+    "best_cv_score": 0.9976401107502518,
+    "cv_r2_mean": 0.9976401107502518,
+    "cv_r2_std": 0.00015486695732612024
+  },
+  "Financial_Risk_Score": {
+    "train_mse": 3.5603611577376317e-06,
+    "test_mse": 1.8515559194141914e-05,
+    "train_r2": 0.9999919694183276,
+    "test_r2": 0.9999585251197123,
+    "test_mae": 0.0014339581307868444,
+    "best_config": "RandomForest_{'regressor__max_depth': None, 'regressor__min_samples_leaf': 1, 'regressor__min_samples_split': 2, 'regressor__n_estimators': 100}",
+    "best_cv_score": 0.9999164725103116,
+    "cv_r2_mean": 0.9999164725103116,
+    "cv_r2_std": 2.80406736128405e-05
+  },
+  "Asset_Risk_Index": {
+    "train_mse": 0.05185632837568734,
+    "test_mse": 0.184948264699328,
+    "train_r2": 0.9995005257452108,
+    "test_r2": 0.9981204371295582,
+    "test_mae": 0.3140822295346177,
+    "best_config": "GradientBoosting_{'regressor__learning_rate': 0.1, 'regressor__max_depth': 6, 'regressor__n_estimators': 200, 'regressor__subsample': 0.9}",
+    "best_cv_score": 0.9977886102947716,
+    "cv_r2_mean": 0.9977886102947716,
+    "cv_r2_std": 0.00022426998075702836
+  },
+  "Audit_Readiness_Score": {
+    "train_mse": 0.05811397169296394,
+    "test_mse": 0.11177251911812215,
+    "train_r2": 0.9994056479114642,
+    "test_r2": 0.998852896534829,
+    "test_mae": 0.21068791408355111,
+    "best_config": "GradientBoosting_{'regressor__learning_rate': 0.05, 'regressor__max_depth': 4, 'regressor__n_estimators': 200, 'regressor__subsample': 0.9}",
+    "best_cv_score": 0.9989730119047593,
+    "cv_r2_mean": 0.9989730119047593,
+    "cv_r2_std": 0.00014108921291141206
+  },
+  "Incident_Impact_Score": {
+    "train_mse": 0.259976244084762,
+    "test_mse": 0.40206366299692253,
+    "train_r2": 0.9995196654974359,
+    "test_r2": 0.9992576281045576,
+    "test_mae": 0.34017970590969504,
+    "best_config": "GradientBoosting_{'regressor__learning_rate': 0.1, 'regressor__max_depth': 4, 'regressor__n_estimators': 200, 'regressor__subsample': 0.8}",
+    "best_cv_score": 0.9991690489101422,
+    "cv_r2_mean": 0.9991690489101422,
+    "cv_r2_std": 7.714359699100922e-05
+  },
+  "Composite_Risk_Score": {
+    "train_mse": 0.08161560356419338,
+    "test_mse": 0.3592918498216253,
+    "train_r2": 0.9980571761542903,
+    "test_r2": 0.9907931333036583,
+    "test_mae": 0.4518409571571998,
+    "best_config": "GradientBoosting_{'regressor__learning_rate': 0.1, 'regressor__max_depth': 6, 'regressor__n_estimators': 200, 'regressor__subsample': 0.8}",
+    "best_cv_score": 0.9894790753437614,
+    "cv_r2_mean": 0.9894790753437614,
+    "cv_r2_std": 0.0004447523557581137
+  }
+}
