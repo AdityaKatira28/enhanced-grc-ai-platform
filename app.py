@@ -1805,8 +1805,7 @@ def main():
         st.markdown("""
         <div style="text-align: center; margin-bottom: 1.5rem;">
             <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🛡️</div>
-            <h2 style="margin: 0; font-size: 1.5rem; font-weight: 700;">Enhanced GRC AI</h2>
-            <div style="font-size: 0.85rem; opacity: 0.7; margin-top: 0.25rem;">v3.3 Model Compatible</div>
+            <h2 style="margin: 0; font-size: 1.5rem; font-weight: 700;">Compliance AI Agent</h2>
         </div>
         """, unsafe_allow_html=True)
         
@@ -1881,7 +1880,7 @@ def main():
     st.markdown("""
     <div style="text-align: center; padding: 2rem; margin-top: 3rem; border-top: 1px solid rgba(0,0,0,0.1);">
         <div style="color: #6b7280; font-size: 0.85rem;">
-            Enhanced GRC AI Platform v3.3 • Model Compatible • Built with Streamlit • Keep sensitive data secure
+            Compliance AI Agent
         </div>
     </div>
     """, unsafe_allow_html=True)
