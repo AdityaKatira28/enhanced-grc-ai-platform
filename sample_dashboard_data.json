@@ -1,0 +1,434 @@
+{
+  "executive_summary": {
+    "total_controls_assessed": 200,
+    "overall_compliance_score": 66.8,
+    "total_financial_exposure": 829.01,
+    "high_risk_controls": 0,
+    "controls_needing_attention": 110
+  },
+  "compliance_metrics": {
+    "status_distribution": {
+      "Partially_Compliant": 71,
+      "Compliant": 63,
+      "Non_Compliant": 28,
+      "Not_Assessed": 15,
+      "In_Progress": 13,
+      "Remediation_Required": 10
+    },
+    "framework_coverage": {
+      "ISO27001": 64,
+      "SOC2": 52,
+      "NIST-CSF": 43,
+      "PCI-DSS": 22,
+      "CIS-Controls": 11,
+      "GDPR": 5,
+      "HIPAA": 2,
+      "CMMC": 1
+    },
+    "maturity_levels": {
+      "1.9": 1,
+      "2.2": 4,
+      "2.3": 1,
+      "2.4": 6,
+      "2.5": 4,
+      "2.6": 6,
+      "2.7": 13,
+      "2.8": 10,
+      "2.9": 8,
+      "3.0": 13,
+      "3.1": 11,
+      "3.2": 14,
+      "3.3": 14,
+      "3.4": 14,
+      "3.5": 15,
+      "3.6": 15,
+      "3.7": 11,
+      "3.8": 13,
+      "3.9": 5,
+      "4.0": 8,
+      "4.1": 8,
+      "4.2": 1,
+      "4.3": 2,
+      "4.4": 1,
+      "4.6": 2
+    },
+    "average_scores_by_framework": {
+      "CIS-Controls": 54.63,
+      "CMMC": 78.75,
+      "GDPR": 56.29,
+      "HIPAA": 52.11,
+      "ISO27001": 70.36,
+      "NIST-CSF": 67.6,
+      "PCI-DSS": 69.63,
+      "SOC2": 64.46
+    }
+  },
+  "risk_analysis": {
+    "financial_risk_distribution": {
+      "count": 200.0,
+      "mean": 1.1730350922758999,
+      "std": 0.650056742715249,
+      "min": 0.10873865851319922,
+      "25%": 0.6747830738047254,
+      "50%": 1.1550825436997845,
+      "75%": 1.4942945534582697,
+      "max": 2.956020253263106
+    },
+    "asset_risk_by_type": {
+      "API": 63.33,
+      "Application": 65.0,
+      "Backup-System": 60.73,
+      "Cloud-Service": 63.05,
+      "Container": 58.41,
+      "Data-Store": 66.11,
+      "Database": 73.73,
+      "E-Commerce-Platform": 62.95,
+      "Endpoint": 59.06,
+      "IoT-Device": 65.85,
+      "Mobile-Device": 60.05,
+      "Network-Device": 62.73,
+      "POS-System": 69.9,
+      "Payment-System": 71.86,
+      "Physical-Server": 72.61,
+      "SCADA-System": 72.07,
+      "Server": 64.35,
+      "Virtual-Machine": 57.5
+    },
+    "industry_risk_profile": {
+      "Financial_Risk_Score": {
+        "Defense": 1.31,
+        "Education": 1.17,
+        "Energy": 1.3,
+        "Financial-Services": 1.38,
+        "Government": 1.52,
+        "Healthcare": 1.26,
+        "Insurance": 1.54,
+        "Manufacturing": 0.78,
+        "Pharmaceuticals": 0.76,
+        "Retail": 1.06,
+        "Technology": 1.1,
+        "Telecommunications": 0.7,
+        "Transportation": 0.51
+      },
+      "Asset_Risk_Index": {
+        "Defense": 72.18,
+        "Education": 64.25,
+        "Energy": 62.47,
+        "Financial-Services": 72.62,
+        "Government": 68.2,
+        "Healthcare": 66.82,
+        "Insurance": 58.29,
+        "Manufacturing": 58.87,
+        "Pharmaceuticals": 67.42,
+        "Retail": 63.88,
+        "Technology": 61.29,
+        "Telecommunications": 64.08,
+        "Transportation": 61.57
+      },
+      "Composite_Risk_Score": {
+        "Defense": 36.98,
+        "Education": 39.43,
+        "Energy": 34.26,
+        "Financial-Services": 34.33,
+        "Government": 34.33,
+        "Healthcare": 34.97,
+        "Insurance": 33.05,
+        "Manufacturing": 32.08,
+        "Pharmaceuticals": 40.94,
+        "Retail": 35.05,
+        "Technology": 36.16,
+        "Telecommunications": 32.96,
+        "Transportation": 32.76
+      }
+    },
+    "geographic_risk_analysis": {
+      "AU": 61.73,
+      "BR": 65.54,
+      "CA": 64.31,
+      "CH": 63.33,
+      "DE": 65.17,
+      "FR": 62.87,
+      "GB": 68.2,
+      "IN": 69.34,
+      "JP": 63.91,
+      "NL": 63.14,
+      "SE": 64.75,
+      "SG": 66.68,
+      "US": 75.12,
+      "ZA": 61.07
+    }
+  },
+  "audit_readiness": {
+    "overall_readiness": 80.0,
+    "evidence_freshness": {
+      "count": 200.0,
+      "mean": 19.74,
+      "std": 47.05542973278092,
+      "min": 0.0,
+      "25%": 2.0,
+      "50%": 6.5,
+      "75%": 18.0,
+      "max": 400.0
+    },
+    "finding_severity_distribution": {
+      "Low": 53,
+      "Medium": 41,
+      "High": 38,
+      "Informational": 24,
+      "Critical": 21,
+      "Best-Practice": 12,
+      "Observation": 10,
+      "Recommendation": 1
+    },
+    "repeat_findings_rate": 25.5
+  },
+  "incident_management": {
+    "incident_types": {
+      "No_Incident": 77,
+      "Configuration_Error": 24,
+      "Data_Breach": 22,
+      "Access_Violation": 17,
+      "System_Outage": 16,
+      "Policy_Violation": 11,
+      "Compliance_Violation": 5,
+      "Documentation_Gap": 4,
+      "Service_Disruption": 4,
+      "Network_Intrusion": 3,
+      "Transaction_Error": 3,
+      "Data_Loss": 3,
+      "Unauthorized_Disclosure": 2,
+      "Regulatory_Action": 2,
+      "Patient_Data_Exposure": 2,
+      "Student_Data_Exposure": 1,
+      "Vendor_Risk": 1,
+      "Payment_Processing_Error": 1,
+      "Privacy_Breach": 1,
+      "Training_Deficiency": 1
+    },
+    "notification_compliance_rate": 55.0,
+    "average_incident_cost": 720710.34,
+    "incident_impact_by_industry": {
+      "Defense": 55.7,
+      "Education": 63.68,
+      "Energy": 48.29,
+      "Financial-Services": 50.45,
+      "Government": 48.28,
+      "Healthcare": 47.96,
+      "Insurance": 48.79,
+      "Manufacturing": 40.15,
+      "Pharmaceuticals": 73.33,
+      "Retail": 42.72,
+      "Technology": 51.84,
+      "Telecommunications": 49.57,
+      "Transportation": 39.8
+    }
+  },
+  "top_risk_items": {
+    "highest_financial_risk": [
+      {
+        "Control_ID": "IR-27",
+        "Financial_Risk_Score": 2.956020253263106,
+        "Business_Impact": "Critical",
+        "Industry_Sector": "Financial-Services",
+        "Penalty_Risk_Assessment": 21063124.05
+      },
+      {
+        "Control_ID": "A.9.12.1",
+        "Financial_Risk_Score": 2.7816495765608686,
+        "Business_Impact": "Critical",
+        "Industry_Sector": "Healthcare",
+        "Penalty_Risk_Assessment": 1055431.24
+      },
+      {
+        "Control_ID": "CP-21",
+        "Financial_Risk_Score": 2.7579611109570066,
+        "Business_Impact": "Critical",
+        "Industry_Sector": "Defense",
+        "Penalty_Risk_Assessment": 711133.18
+      },
+      {
+        "Control_ID": "A.12.2",
+        "Financial_Risk_Score": 2.7297376599766197,
+        "Business_Impact": "Critical",
+        "Industry_Sector": "Healthcare",
+        "Penalty_Risk_Assessment": 5806.31
+      },
+      {
+        "Control_ID": "SA-10(13)",
+        "Financial_Risk_Score": 2.638740386620099,
+        "Business_Impact": "Critical",
+        "Industry_Sector": "Government",
+        "Penalty_Risk_Assessment": 16977046.3
+      },
+      {
+        "Control_ID": "A.9.5.4",
+        "Financial_Risk_Score": 2.635001509454521,
+        "Business_Impact": "Critical",
+        "Industry_Sector": "Government",
+        "Penalty_Risk_Assessment": 3168376.96
+      },
+      {
+        "Control_ID": "A.14.11",
+        "Financial_Risk_Score": 2.606123572125368,
+        "Business_Impact": "Critical",
+        "Industry_Sector": "Government",
+        "Penalty_Risk_Assessment": 64903.81
+      },
+      {
+        "Control_ID": "A.13.2.1",
+        "Financial_Risk_Score": 2.5761213683324744,
+        "Business_Impact": "Critical",
+        "Industry_Sector": "Government",
+        "Penalty_Risk_Assessment": 3266.51
+      },
+      {
+        "Control_ID": "A.18.7.2",
+        "Financial_Risk_Score": 2.3207400723734897,
+        "Business_Impact": "Critical",
+        "Industry_Sector": "Insurance",
+        "Penalty_Risk_Assessment": 2238250.59
+      },
+      {
+        "Control_ID": "Art.60",
+        "Financial_Risk_Score": 2.3142001219823527,
+        "Business_Impact": "Critical",
+        "Industry_Sector": "Technology",
+        "Penalty_Risk_Assessment": 517802660.51
+      }
+    ],
+    "lowest_compliance_scores": [
+      {
+        "Control_ID": "Control 3.3",
+        "Compliance_Score": 40.6125,
+        "Control_Status_Distribution": "Non_Compliant",
+        "Applicable_Compliance_Frameworks": "CIS-Controls",
+        "Organizational_Unit": "DevSecOps"
+      },
+      {
+        "Control_ID": "Req 2.5",
+        "Compliance_Score": 42.25,
+        "Control_Status_Distribution": "Non_Compliant",
+        "Applicable_Compliance_Frameworks": "PCI-DSS",
+        "Organizational_Unit": "Payment Card Security"
+      },
+      {
+        "Control_ID": "A.8.11",
+        "Compliance_Score": 42.5,
+        "Control_Status_Distribution": "Non_Compliant",
+        "Applicable_Compliance_Frameworks": "ISO27001",
+        "Organizational_Unit": "Store Operations Security"
+      },
+      {
+        "Control_ID": "CC2.7.1",
+        "Compliance_Score": 43.00000000000001,
+        "Control_Status_Distribution": "Non_Compliant",
+        "Applicable_Compliance_Frameworks": "SOC2",
+        "Organizational_Unit": "E-commerce Protection"
+      },
+      {
+        "Control_ID": "CC3.7",
+        "Compliance_Score": 43.224999999999994,
+        "Control_Status_Distribution": "Non_Compliant",
+        "Applicable_Compliance_Frameworks": "SOC2",
+        "Organizational_Unit": "Data Protection Office"
+      },
+      {
+        "Control_ID": "CC6.5.2",
+        "Compliance_Score": 43.25,
+        "Control_Status_Distribution": "Remediation_Required",
+        "Applicable_Compliance_Frameworks": "SOC2",
+        "Organizational_Unit": "Compliance and Governance"
+      },
+      {
+        "Control_ID": "CC7.7",
+        "Compliance_Score": 43.699999999999996,
+        "Control_Status_Distribution": "Non_Compliant",
+        "Applicable_Compliance_Frameworks": "SOC2",
+        "Organizational_Unit": "Compliance Engineering"
+      },
+      {
+        "Control_ID": "Control 14.7",
+        "Compliance_Score": 43.9375,
+        "Control_Status_Distribution": "Non_Compliant",
+        "Applicable_Compliance_Frameworks": "CIS-Controls",
+        "Organizational_Unit": "Compliance Engineering"
+      },
+      {
+        "Control_ID": "CC7.5",
+        "Compliance_Score": 44.35,
+        "Control_Status_Distribution": "Non_Compliant",
+        "Applicable_Compliance_Frameworks": "SOC2",
+        "Organizational_Unit": "Privacy Office"
+      },
+      {
+        "Control_ID": "CC3.2.3",
+        "Compliance_Score": 44.85,
+        "Control_Status_Distribution": "Non_Compliant",
+        "Applicable_Compliance_Frameworks": "SOC2",
+        "Organizational_Unit": "E-commerce Protection"
+      }
+    ],
+    "critical_assets": [
+      {
+        "Asset_Type": "Payment-System",
+        "Asset_Risk_Index": 89.5,
+        "Data_Sensitivity_Classification": "Regulated",
+        "Industry_Sector": "Financial-Services"
+      },
+      {
+        "Asset_Type": "Database",
+        "Asset_Risk_Index": 87.5,
+        "Data_Sensitivity_Classification": "Financial-Data",
+        "Industry_Sector": "Financial-Services"
+      },
+      {
+        "Asset_Type": "Server",
+        "Asset_Risk_Index": 84.25,
+        "Data_Sensitivity_Classification": "Top-Secret",
+        "Industry_Sector": "Defense"
+      },
+      {
+        "Asset_Type": "Physical-Server",
+        "Asset_Risk_Index": 84.00000000000001,
+        "Data_Sensitivity_Classification": "Personal-Data",
+        "Industry_Sector": "Healthcare"
+      },
+      {
+        "Asset_Type": "Physical-Server",
+        "Asset_Risk_Index": 83.75,
+        "Data_Sensitivity_Classification": "Regulated",
+        "Industry_Sector": "Defense"
+      },
+      {
+        "Asset_Type": "POS-System",
+        "Asset_Risk_Index": 83.74999999999999,
+        "Data_Sensitivity_Classification": "Regulated",
+        "Industry_Sector": "Financial-Services"
+      },
+      {
+        "Asset_Type": "SCADA-System",
+        "Asset_Risk_Index": 83.25,
+        "Data_Sensitivity_Classification": "Restricted",
+        "Industry_Sector": "Government"
+      },
+      {
+        "Asset_Type": "IoT-Device",
+        "Asset_Risk_Index": 83.25,
+        "Data_Sensitivity_Classification": "Financial-Data",
+        "Industry_Sector": "Financial-Services"
+      },
+      {
+        "Asset_Type": "SCADA-System",
+        "Asset_Risk_Index": 83.25,
+        "Data_Sensitivity_Classification": "Restricted",
+        "Industry_Sector": "Energy"
+      },
+      {
+        "Asset_Type": "Physical-Server",
+        "Asset_Risk_Index": 82.74999999999999,
+        "Data_Sensitivity_Classification": "Financial-Data",
+        "Industry_Sector": "Financial-Services"
+      }
+    ]
+  }
+}
