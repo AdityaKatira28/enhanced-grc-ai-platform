@@ -2,9 +2,6 @@
 # Development mode - set to false for production
 developmentMode = false
 
-# Data frame serialization
-dataFrameSerialization = "legacy"
-
 [server]
 # Server settings
 runOnSave = false
@@ -17,9 +14,6 @@ fileWatcherType = "auto"
 enableCORS = false
 enableXsrfProtection = true
 
-# Port settings (Streamlit Cloud manages this)
-# port = 8501
-
 # Maximum upload size (200MB)
 maxUploadSize = 200
 
@@ -29,9 +23,6 @@ maxMessageSize = 200
 [browser]
 # Gather usage stats for Streamlit Cloud
 gatherUsageStats = true
-
-# Server address - let Streamlit Cloud handle this
-# serverAddress = "localhost"
 
 [theme]
 # Default theme - users can toggle between themes in the app
@@ -53,9 +44,6 @@ toolbarMode = "auto"
 [runner]
 # Magic commands
 magicEnabled = true
-
-# Install missing packages
-installTracer = false
 
 # Fast rerun
 fastReruns = true
