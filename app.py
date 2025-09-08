@@ -1496,41 +1496,16 @@ def show_model_insights():
                 
                 # Show raw data
                 with st.expander("View Raw Feature Importance Data"):
-                    # FIXED CODE - replace the existing feature importance display section
-# Normalize the importance data to ensure consistent column names
-if importance_data:
-    # Check if it's a list of lists with 2 elements (feature, value)
-    if all(isinstance(item, (list, tuple)) and len(item) == 2 for item in importance_data):
-        # Create DataFrame with proper column names
-        imp_df = pd.DataFrame(importance_data, columns=['Feature', 'Importance'])
+                    if isinstance(importance_data[0], tuple):
+                        imp_df = pd.DataFrame(importance_data, columns=['Feature', 'Importance'])
+                    else:
+                        imp_df = pd.DataFrame(importance_data)
+                    st.dataframe(imp_df.sort_values('Importance', ascending=False), 
+                               use_container_width=True, hide_index=True)
     else:
-        # Fallback for unexpected data structures
-        logger.warning("Unexpected feature importance data structure")
-        imp_df = pd.DataFrame(importance_data)
-        # Try to identify importance column
-        if 'value' in imp_df.columns:
-            imp_df = imp_df.rename(columns={'value': 'Importance'})
-        elif 1 in imp_df.columns:
-            imp_df = imp_df.rename(columns={1: 'Importance'})
-        
-        # Ensure we have a Feature column
-        if 'feature' in imp_df.columns:
-            imp_df = imp_df.rename(columns={'feature': 'Feature'})
-        elif 0 in imp_df.columns:
-            imp_df = imp_df.rename(columns={0: 'Feature'})
+        st.info("Feature importance data not available. This may indicate the model is using mock data for demonstration.")
     
-    # Only sort if 'Importance' column exists
-    if 'Importance' in imp_df.columns:
-        st.dataframe(imp_df.sort_values('Importance', ascending=False),
-                     width="stretch", hide_index=True)
-    else:
-        st.warning("Could not display feature importance - missing 'Importance' column")
-        st.dataframe(imp_df, width="stretch", hide_index=True)
-else:
-    st.info("No feature importance data available for this model")
-    st.info("Feature importance data not available. This may indicate the model is using mock data for demonstration.")
-
-st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 def show_settings():
     """Enhanced settings page"""
