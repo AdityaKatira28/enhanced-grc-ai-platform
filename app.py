@@ -1426,7 +1426,7 @@ def show_model_insights():
             })
         
         metrics_df = pd.DataFrame(metrics_data)
-        st.dataframe(metrics_df, use_container_width=True, hide_index=True)
+        st.dataframe(metrics_df, width="stretch", hide_index=True)
         
         # Model performance visualization
         perf_col1, perf_col2 = st.columns(2)
