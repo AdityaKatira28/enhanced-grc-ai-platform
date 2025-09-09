@@ -1,5 +1,5 @@
-# Enhanced GRC AI Platform - Model Compatible Version v3.3
-# Fixed compatibility issues with the ML model
+# Enhanced GRC AI Platform - Model Compatible Version v3.4
+# Removed all mock data functionality - strict real-time model processing
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -19,19 +19,15 @@ from datetime import datetime, timedelta
 from io import BytesIO
 import time
 import uuid
-import random
-
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger("Enhanced_GRC_AI_Platform")
-
 # ======================
 # MODEL COMPATIBILITY MAPPINGS
 # ======================
-
 # FIXED: Value mappings to match model expectations
 MATURITY_LEVEL_MAPPING = {
     "Initial": 1,
@@ -40,7 +36,6 @@ MATURITY_LEVEL_MAPPING = {
     "Quantitatively Managed": 4,
     "Optimizing": 5
 }
-
 CONTROL_STATUS_MAPPING = {
     "0% Implemented": "Not_Assessed",
     "25% Implemented": "In_Progress", 
@@ -48,7 +43,6 @@ CONTROL_STATUS_MAPPING = {
     "75% Implemented": "Exception_Approved",
     "100% Implemented": "Compliant"
 }
-
 TESTING_FREQUENCY_MAPPING = {
     "Never": "On-Demand",
     "Annually": "Annual",
@@ -57,7 +51,6 @@ TESTING_FREQUENCY_MAPPING = {
     "Monthly": "Monthly",
     "Weekly": "Weekly"
 }
-
 INCIDENT_TYPE_MAPPING = {
     "Data Breach": "Data_Breach",
     "System Outage": "System_Outage", 
@@ -67,7 +60,6 @@ INCIDENT_TYPE_MAPPING = {
     "DDoS": "DDoS",
     "Insider Threat": "Insider_Threat"
 }
-
 # FIXED: Business impact mapping
 BUSINESS_IMPACT_MAPPING = {
     "Negligible": "Negligible",
@@ -76,7 +68,6 @@ BUSINESS_IMPACT_MAPPING = {
     "High": "High",
     "Critical": "Critical"
 }
-
 # FIXED: Audit severity mapping
 AUDIT_SEVERITY_MAPPING = {
     "Informational": "Informational",
@@ -85,7 +76,6 @@ AUDIT_SEVERITY_MAPPING = {
     "High": "High", 
     "Critical": "Critical"
 }
-
 # ======================
 # THEME CONFIGURATION (unchanged)
 # ======================
@@ -115,7 +105,6 @@ THEMES = {
         "danger": "#f56565",
     }
 }
-
 # ======================
 # SESSION STATE INIT (unchanged)
 # ======================
@@ -137,7 +126,6 @@ def init_session_state():
         st.session_state.scoring_engine = None
     if 'risk_assessment' not in st.session_state:
         st.session_state.risk_assessment = None
-
 # ======================
 # ENHANCED CSS (unchanged)
 # ======================
@@ -146,7 +134,6 @@ def get_enhanced_css():
     return f"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-    
     :root {{
         --primary: {theme['primary']};
         --secondary: {theme['secondary']};
@@ -158,13 +145,11 @@ def get_enhanced_css():
         --bg-gradient: {theme['bg']};
         --accent: {theme['accent']};
     }}
-    
     .stApp {{
         background: var(--bg-gradient);
         color: var(--text-color);
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }}
-    
     .main-header {{
         font-size: 2.8rem;
         font-weight: 800;
@@ -174,7 +159,6 @@ def get_enhanced_css():
         -webkit-text-fill-color: transparent;
         line-height: 1.2;
     }}
-    
     .section-container {{
         background: var(--card-bg);
         border-radius: 20px;
@@ -184,12 +168,10 @@ def get_enhanced_css():
         border: 1px solid rgba(255, 255, 255, 0.1);
         transition: all 0.3s ease;
     }}
-    
     .section-container:hover {{
         transform: translateY(-3px);
         box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
     }}
-    
     .metric-card {{
         background: var(--card-bg);
         border-radius: 15px;
@@ -205,7 +187,6 @@ def get_enhanced_css():
         flex-direction: column;
         justify-content: center;
     }}
-    
     .metric-card::before {{
         content: '';
         position: absolute;
@@ -215,12 +196,10 @@ def get_enhanced_css():
         height: 4px;
         background: linear-gradient(90deg, var(--primary), var(--secondary));
     }}
-    
     .metric-card:hover {{
         transform: translateY(-5px);
         box-shadow: 0 12px 40px rgba(0,0,0,0.15);
     }}
-    
     .metric-title {{
         font-size: 0.85rem;
         font-weight: 600;
@@ -230,13 +209,11 @@ def get_enhanced_css():
         letter-spacing: 0.5px;
         margin-bottom: 0.5rem;
     }}
-    
     .metric-value {{
         font-size: 2rem;
         font-weight: 700;
         color: var(--primary);
     }}
-    
     .stButton > button {{
         background: linear-gradient(135deg, var(--primary), var(--secondary));
         border: none;
@@ -249,12 +226,10 @@ def get_enhanced_css():
         letter-spacing: 0.5px;
         box-shadow: 0 4px 15px rgba(67, 97, 238, 0.4);
     }}
-    
     .stButton > button:hover {{
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(67, 97, 238, 0.6);
     }}
-    
     .recommendation-card {{
         background: var(--card-bg);
         border-radius: 15px;
@@ -264,12 +239,10 @@ def get_enhanced_css():
         transition: all 0.3s ease;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     }}
-    
     .recommendation-card:hover {{
         transform: translateY(-3px) scale(1.01);
         box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
     }}
-    
     .risk-badge {{
         padding: 0.3rem 0.8rem;
         border-radius: 20px;
@@ -278,7 +251,6 @@ def get_enhanced_css():
         margin-right: 0.5rem;
         font-size: 0.8rem;
     }}
-    
     .risk-critical {{ 
         background: rgba(239, 71, 111, 0.15); 
         color: #ef476f; 
@@ -299,7 +271,6 @@ def get_enhanced_css():
         color: #06d6a0; 
         border-left-color: #06d6a0; 
     }}
-    
     .ai-insight {{
         margin-bottom: 1rem;
         padding: 1.5rem;
@@ -309,27 +280,22 @@ def get_enhanced_css():
         position: relative;
         overflow: hidden;
     }}
-    
     .ai-insight.info {{
         border-left-color: var(--primary);
         background: rgba(67, 97, 238, 0.05);
     }}
-    
     .ai-insight.warning {{
         border-left-color: var(--warning);
         background: rgba(255, 209, 102, 0.05);
     }}
-    
     .ai-insight.critical {{
         border-left-color: var(--danger);
         background: rgba(239, 71, 111, 0.05);
     }}
-    
     .ai-insight.success {{
         border-left-color: var(--success);
         background: rgba(6, 214, 160, 0.05);
     }}
-    
     .ai-insight-header {{
         display: flex;
         align-items: center;
@@ -338,13 +304,11 @@ def get_enhanced_css():
         font-weight: 600;
         font-size: 1.1rem;
     }}
-    
     .loading-container {{
         display: flex;
         justify-content: center;
         margin: 1.5rem 0;
     }}
-    
     .loading-dot {{
         width: 12px;
         height: 12px;
@@ -353,10 +317,8 @@ def get_enhanced_css():
         background-color: var(--primary);
         animation: pulse 1.5s infinite;
     }}
-    
     .loading-dot:nth-child(2) {{ animation-delay: 0.2s; }}
     .loading-dot:nth-child(3) {{ animation-delay: 0.4s; }}
-    
     @keyframes pulse {{
         0% {{ opacity: 0.2; }}
         50% {{ opacity: 1; }}
@@ -364,9 +326,8 @@ def get_enhanced_css():
     }}
     </style>
     """
-
 # ======================
-# ENHANCED SCORING ENGINE - FIXED VERSION
+# ENHANCED SCORING ENGINE - STRICT REAL-TIME MODEL PROCESSING
 # ======================
 class EnhancedGRCScoreEngine:
     def __init__(self, model_dir="enhanced_grc_models"):
@@ -381,18 +342,26 @@ class EnhancedGRCScoreEngine:
         self._initialize_engine()
     
     def _initialize_engine(self):
+        """Strict initialization with no mock data fallback"""
         try:
             self._load_models()
             self._load_metadata()
+            
+            # Critical check: Ensure models were actually loaded
             if not self.models:
-                logger.warning("No models found, creating mock engine for demonstration")
-                self._create_mock_engine()
+                error_msg = ("No models found in the model directory. "
+                             "Please ensure model files are properly placed in "
+                             "'enhanced_grc_models' directory.")
+                logger.error(error_msg)
+                raise FileNotFoundError(error_msg)
+                
             logger.info(f"GRC Scoring Engine initialized with {len(self.models)} models")
         except Exception as e:
-            logger.error(f"Error initializing GRC Scoring Engine: {str(e)}")
-            self._create_mock_engine()
+            logger.critical(f"Critical error initializing GRC Scoring Engine: {str(e)}")
+            raise  # Propagate the error - no fallback to mock data
     
     def _load_models(self):
+        """Strict model loading with no fallback"""
         model_files = {
             'Compliance_Score': 'compliance_score_model.joblib',
             'Financial_Risk_Score': 'financial_risk_score_model.joblib',
@@ -408,11 +377,19 @@ class EnhancedGRCScoreEngine:
                 try:
                     self.models[score_name] = joblib.load(model_path)
                     self.model_versions[score_name] = model_path.stat().st_mtime
-                    logger.info(f"Loaded {score_name} model")
+                    logger.info(f"Loaded {score_name} model from {model_path}")
                 except Exception as e:
                     logger.error(f"Failed to load {score_name} model: {str(e)}")
+                    # Don't add this model to the collection if loading failed
+            else:
+                logger.warning(f"Model file not found: {model_path}")
+        
+        # If no models were successfully loaded, raise an error
+        if not self.models:
+            raise FileNotFoundError("No valid model files found in the model directory")
     
     def _load_metadata(self):
+        """Strict metadata loading with no fallback"""
         metadata_files = {
             'feature_info.json': 'feature_info',
             'scoring_config.json': 'scoring_config',
@@ -429,149 +406,39 @@ class EnhancedGRCScoreEngine:
                     logger.info(f"Loaded {filename}")
                 except Exception as e:
                     logger.error(f"Failed to load {filename}: {str(e)}")
-    
-    def _create_mock_engine(self):
-        """Create a mock scoring engine for demonstration"""
-        self.models = {
-            'Compliance_Score': 'mock_model',
-            'Financial_Risk_Score': 'mock_model',
-            'Asset_Risk_Index': 'mock_model',
-            'Audit_Readiness_Score': 'mock_model',
-            'Incident_Impact_Score': 'mock_model',
-            'Composite_Risk_Score': 'mock_model'
-        }
-        
-        # Enhanced mock metadata
-        self.model_metadata = {
-            'Compliance_Score': {'test_r2': 0.87, 'test_mae': 8.2, 'cv_r2_mean': 0.85, 'precision': 0.84, 'recall': 0.82, 'f1_score': 0.83},
-            'Financial_Risk_Score': {'test_r2': 0.79, 'test_mae': 12.5, 'cv_r2_mean': 0.76, 'precision': 0.78, 'recall': 0.75, 'f1_score': 0.76},
-            'Asset_Risk_Index': {'test_r2': 0.82, 'test_mae': 9.8, 'cv_r2_mean': 0.80, 'precision': 0.81, 'recall': 0.79, 'f1_score': 0.80},
-            'Audit_Readiness_Score': {'test_r2': 0.85, 'test_mae': 7.5, 'cv_r2_mean': 0.83, 'precision': 0.83, 'recall': 0.81, 'f1_score': 0.82},
-            'Incident_Impact_Score': {'test_r2': 0.75, 'test_mae': 10.2, 'cv_r2_mean': 0.72, 'precision': 0.74, 'recall': 0.72, 'f1_score': 0.73},
-            'Composite_Risk_Score': {'test_r2': 0.89, 'test_mae': 6.8, 'cv_r2_mean': 0.87, 'precision': 0.88, 'recall': 0.86, 'f1_score': 0.87}
-        }
-        
-        # Enhanced feature importance with proper formatting
-        self.feature_importance = {
-            'Compliance_Score': [
-                ('Compliance_Maturity_Level', 0.20),
-                ('Control_Testing_Frequency', 0.15),
-                ('Control_Status_Distribution', 0.15),
-                ('Applicable_Compliance_Frameworks', 0.10),
-                ('Business_Impact', 0.10),
-                ('Data_Sensitivity_Classification', 0.08),
-                ('Audit_Preparation_Score', 0.07),
-                ('Evidence_Freshness_Days', 0.05),
-                ('Repeat_Finding', 0.05),
-                ('Industry_Sector', 0.05)
-            ],
-            'Financial_Risk_Score': [
-                ('Penalty_Risk_Assessment', 0.25),
-                ('Business_Impact', 0.20),
-                ('Annual_Revenue', 0.15),
-                ('Remediation_Cost', 0.15),
-                ('Data_Sensitivity_Classification', 0.10),
-                ('Industry_Sector', 0.08),
-                ('Risk_Exposure_Ratio', 0.07)
-            ],
-            'Asset_Risk_Index': [
-                ('Data_Sensitivity_Classification', 0.30),
-                ('Asset_Type', 0.25),
-                ('Geographic_Scope', 0.20),
-                ('Industry_Sector', 0.15),
-                ('Organizational_Unit', 0.10)
-            ],
-            'Audit_Readiness_Score': [
-                ('Evidence_Freshness_Days', 0.25),
-                ('Audit_Preparation_Score', 0.20),
-                ('Control_Status_Distribution', 0.15),
-                ('Repeat_Finding', 0.15),
-                ('Applicable_Compliance_Frameworks', 0.10),
-                ('Audit_Finding_Severity', 0.10),
-                ('Compliance_Owner', 0.05)
-            ],
-            'Incident_Impact_Score': [
-                ('Incident_Type', 0.30),
-                ('Business_Impact', 0.20),
-                ('Data_Sensitivity_Classification', 0.15),
-                ('Incident_Notification_Compliance', 0.15),
-                ('Remediation_Cost', 0.10),
-                ('Audit_Finding_Severity', 0.10)
-            ]
-        }
+            else:
+                logger.warning(f"Metadata file not found: {file_path}")
     
     def predict_scores(self, data):
-        """Enhanced prediction with better error handling - FIXED VERSION"""
+        """Strict prediction using only real models - no mock data fallback"""
         try:
             processed_data = self._preprocess_input(data)
             predictions = {}
             
+            # Verify we have models loaded
+            if not self.models:
+                raise ValueError("No models available for prediction. Engine must be properly initialized with model files.")
+                
             for score_name, model in self.models.items():
                 try:
-                    if model == 'mock_model':
-                        predictions[score_name] = self._generate_mock_prediction(score_name, data)
-                    else:
-                        pred = model.predict(processed_data)
-                        predictions[score_name] = float(pred[0])
+                    # Only process with real models
+                    pred = model.predict(processed_data)
+                    predictions[score_name] = float(pred[0])
                 except Exception as e:
                     logger.error(f"Error predicting {score_name}: {str(e)}")
-                    predictions[score_name] = self._generate_mock_prediction(score_name, data)
+                    # Don't use mock data - skip this model but don't fail entire prediction
+                    # This is a safety measure, but in production you might want to fail hard
+                    continue
             
+            # If no predictions were made, raise an error
+            if not predictions:
+                raise ValueError("Failed to generate predictions for all models. Check model compatibility and input data.")
+                
             return predictions
-            
         except Exception as e:
-            logger.error(f"Error in predict_scores: {str(e)}")
-            return self._fallback_predictions()
+            logger.error(f"Critical error in predict_scores: {str(e)}")
+            raise  # Propagate the error instead of returning mock data
     
-    # FIXED: Updated mock prediction with correct field names
-    def _generate_mock_prediction(self, score_name, data):
-        """Generate realistic mock predictions based on input data - FIXED VERSION"""
-        base_scores = {
-            'Compliance_Score': 75,
-            'Financial_Risk_Score': 50,
-            'Asset_Risk_Index': 60,
-            'Audit_Readiness_Score': 70,
-            'Incident_Impact_Score': 40,
-            'Composite_Risk_Score': 55
-        }
-        
-        base = base_scores.get(score_name, 50)
-        variance = random.uniform(-15, 15)
-        
-        # FIXED: Use correct field names from model
-        if isinstance(data, dict):
-            # Check compliance maturity level
-            if 'Compliance_Maturity_Level' in data and data['Compliance_Maturity_Level'] >= 4:
-                if score_name == 'Compliance_Score':
-                    variance += 10
-                    
-            # Check business impact    
-            if 'Business_Impact' in data and data['Business_Impact'] == 'Critical':
-                if score_name in ['Financial_Risk_Score', 'Asset_Risk_Index', 'Incident_Impact_Score']:
-                    variance += 10
-                    
-            # Check control status
-            if 'Control_Status_Distribution' in data:
-                if data['Control_Status_Distribution'] == 'Compliant' and score_name == 'Compliance_Score':
-                    variance += 8
-                elif data['Control_Status_Distribution'] in ['Not_Assessed', 'In_Progress'] and score_name == 'Compliance_Score':
-                    variance -= 8
-                    
-            # Check incident type
-            if 'Incident_Type' in data:
-                if data['Incident_Type'] == 'Data_Breach' and score_name == 'Incident_Impact_Score':
-                    variance += 15
-                elif data['Incident_Type'] == 'None' and score_name == 'Incident_Impact_Score':
-                    variance -= 20
-                    
-            # Check data sensitivity
-            if 'Data_Sensitivity_Classification' in data:
-                if data['Data_Sensitivity_Classification'] in ['Top-Secret', 'Regulated', 'Health-Data'] and score_name == 'Asset_Risk_Index':
-                    variance += 12
-        
-        return max(0, min(100, base + variance))
-    
-    # FIXED: Updated preprocessing with correct field names
     def _preprocess_input(self, data):
         """Enhanced input preprocessing - FIXED VERSION"""
         if isinstance(data, dict):
@@ -596,17 +463,6 @@ class EnhancedGRCScoreEngine:
                                            labels=['Startup', 'SME', 'Mid-Market', 'Large', 'Enterprise'])
         
         return df
-    
-    def _fallback_predictions(self):
-        """Fallback predictions if all else fails"""
-        return {
-            'Compliance_Score': random.uniform(60, 85),
-            'Financial_Risk_Score': random.uniform(30, 70),
-            'Asset_Risk_Index': random.uniform(40, 80),
-            'Audit_Readiness_Score': random.uniform(50, 85),
-            'Incident_Impact_Score': random.uniform(20, 60),
-            'Composite_Risk_Score': random.uniform(40, 75)
-        }
     
     def generate_assessment(self, input_data, predictions):
         """Generate comprehensive risk assessment"""
@@ -643,17 +499,15 @@ class EnhancedGRCScoreEngine:
     def _generate_recommendations(self, predictions, input_data):
         """Generate detailed recommendations"""
         recommendations = []
-        
         if predictions.get('Compliance_Score', 100) < 75:
             recommendations.append({
-                "title": "🚨 Enhance Compliance Controls",
+                "title": "🔍 Enhance Compliance Controls",
                 "description": f"Compliance score of {predictions['Compliance_Score']:.1f}% is below industry benchmark. Focus on improving control effectiveness, documentation quality, and testing frequency.",
                 "priority": "HIGH" if predictions['Compliance_Score'] < 60 else "MEDIUM",
                 "impact": "25-35% improvement in compliance posture",
                 "timeline": "30-60 days",
                 "effort": "High"
             })
-        
         if predictions.get('Financial_Risk_Score', 0) > 65:
             recommendations.append({
                 "title": "💰 Mitigate Financial Risk Exposure",
@@ -663,7 +517,6 @@ class EnhancedGRCScoreEngine:
                 "timeline": "Immediate" if predictions['Financial_Risk_Score'] > 80 else "30 days",
                 "effort": "Medium"
             })
-        
         if predictions.get('Asset_Risk_Index', 0) > 70:
             recommendations.append({
                 "title": "🛡️ Strengthen Asset Protection",
@@ -673,7 +526,6 @@ class EnhancedGRCScoreEngine:
                 "timeline": "30-75 days",
                 "effort": "High"
             })
-        
         if predictions.get('Audit_Readiness_Score', 100) < 60:
             recommendations.append({
                 "title": "📋 Improve Audit Preparation",
@@ -683,25 +535,19 @@ class EnhancedGRCScoreEngine:
                 "timeline": "45-90 days",
                 "effort": "Medium"
             })
-        
         return recommendations
     
     def _generate_priority_actions(self, predictions):
         """Generate priority actions list"""
         actions = []
-        
         if predictions.get('Compliance_Score', 100) < 70:
             actions.append("Immediate compliance gap remediation required")
-        
         if predictions.get('Financial_Risk_Score', 0) > 75:
             actions.append("Urgent financial risk mitigation needed")
-        
         if predictions.get('Incident_Impact_Score', 0) > 70:
             actions.append("Strengthen incident response capabilities")
-        
         if not actions:
             actions.append("Continue monitoring and maintain current controls")
-        
         return actions
     
     def get_benchmark_data(self, industry=None):
@@ -727,7 +573,6 @@ def create_enhanced_gauge(value, title, min_val=0, max_val=100):
         color = '#f59e0b'
     else:
         color = '#ef4444'
-    
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
         value=value,
@@ -752,14 +597,12 @@ def create_enhanced_gauge(value, title, min_val=0, max_val=100):
         },
         number={'font': {'size': 24}}
     ))
-    
     fig.update_layout(
         height=300,
         margin=dict(l=20, r=20, t=50, b=20),
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)'
     )
-    
     return fig
 
 def create_radar_chart(scores):
@@ -772,11 +615,8 @@ def create_radar_chart(scores):
         scores.get('Audit_Readiness_Score', 0),
         100 - scores.get('Incident_Impact_Score', 0)
     ]
-    
     values = [max(0, min(100, v)) for v in values]
-    
     fig = go.Figure()
-    
     fig.add_trace(go.Scatterpolar(
         r=values,
         theta=categories,
@@ -785,7 +625,6 @@ def create_radar_chart(scores):
         line_color='#4361ee',
         fillcolor='rgba(67, 97, 238, 0.1)'
     ))
-    
     # Add benchmark line
     benchmark_values = [80, 80, 80, 80, 80]
     fig.add_trace(go.Scatterpolar(
@@ -797,7 +636,6 @@ def create_radar_chart(scores):
         line_color='#06d6a0',
         fillcolor='rgba(6, 214, 160, 0.1)'
     ))
-    
     fig.update_layout(
         polar=dict(
             radialaxis=dict(visible=True, range=[0, 100])
@@ -808,23 +646,21 @@ def create_radar_chart(scores):
         plot_bgcolor="rgba(0,0,0,0)",
         height=400
     )
-    
     return fig
 
 def create_feature_importance_chart(features, title):
     """Create enhanced feature importance visualization"""
     if not features:
         return None
-    
     # Convert to DataFrame for better handling
     if isinstance(features[0], tuple):
         df = pd.DataFrame(features, columns=['Feature', 'Importance'])
     else:
         df = pd.DataFrame(features)
-        df.columns = ['Feature', 'Importance']
-    
+        # Ensure we have the right column names
+        if len(df.columns) >= 2:
+            df.columns = ['Feature', 'Importance']
     df = df.sort_values('Importance', ascending=True)
-    
     fig = px.bar(
         df.tail(10),  # Top 10 features
         x='Importance',
@@ -835,7 +671,6 @@ def create_feature_importance_chart(features, title):
         color_continuous_scale='Viridis',
         height=400
     )
-    
     fig.update_layout(
         xaxis_title="Importance Score",
         yaxis_title="",
@@ -845,7 +680,6 @@ def create_feature_importance_chart(features, title):
         coloraxis_showscale=False,
         yaxis={'categoryorder': 'total ascending'}
     )
-    
     return fig
 
 # ======================
@@ -854,9 +688,8 @@ def create_feature_importance_chart(features, title):
 def show_dashboard():
     """Enhanced dashboard with comprehensive insights"""
     st.markdown('<h2 class="main-header">📊 Executive Dashboard</h2>', unsafe_allow_html=True)
-    
     if not st.session_state.risk_assessment:
-        st.info("📋 No risk assessment available. Please complete a risk assessment first to see your dashboard.")
+        st.info("ℹ️ No risk assessment available. Please complete a risk assessment first to see your dashboard.")
         return
     
     assessment = st.session_state.risk_assessment
@@ -864,10 +697,8 @@ def show_dashboard():
     
     # Key Metrics Overview
     st.markdown('<div class="section-container">', unsafe_allow_html=True)
-    st.subheader("🎯 Key Risk Indicators")
-    
+    st.subheader("📈 Key Risk Indicators")
     col1, col2, col3, col4, col5 = st.columns(5)
-    
     with col1:
         st.markdown(f"""
         <div class="metric-card">
@@ -875,7 +706,6 @@ def show_dashboard():
             <div class="metric-value">{predictions.get('Compliance_Score', 0):.1f}%</div>
         </div>
         """, unsafe_allow_html=True)
-    
     with col2:
         st.markdown(f"""
         <div class="metric-card">
@@ -883,7 +713,6 @@ def show_dashboard():
             <div class="metric-value">{predictions.get('Financial_Risk_Score', 0):.1f}%</div>
         </div>
         """, unsafe_allow_html=True)
-    
     with col3:
         st.markdown(f"""
         <div class="metric-card">
@@ -891,7 +720,6 @@ def show_dashboard():
             <div class="metric-value">{predictions.get('Asset_Risk_Index', 0):.1f}%</div>
         </div>
         """, unsafe_allow_html=True)
-    
     with col4:
         st.markdown(f"""
         <div class="metric-card">
@@ -899,7 +727,6 @@ def show_dashboard():
             <div class="metric-value">{predictions.get('Audit_Readiness_Score', 0):.1f}%</div>
         </div>
         """, unsafe_allow_html=True)
-    
     with col5:
         st.markdown(f"""
         <div class="metric-card">
@@ -907,16 +734,13 @@ def show_dashboard():
             <div class="metric-value">{predictions.get('Composite_Risk_Score', 0):.1f}%</div>
         </div>
         """, unsafe_allow_html=True)
-    
     st.markdown('</div>', unsafe_allow_html=True)
     
     # Visualizations
     col_viz1, col_viz2 = st.columns(2)
-    
     with col_viz1:
         st.markdown('<div class="section-container">', unsafe_allow_html=True)
-        st.subheader("🎯 Performance Gauges")
-        
+        st.subheader("📊 Performance Gauges")
         gauge_col1, gauge_col2 = st.columns(2)
         with gauge_col1:
             st.plotly_chart(create_enhanced_gauge(predictions.get('Compliance_Score', 0), "Compliance"), 
@@ -924,12 +748,11 @@ def show_dashboard():
         with gauge_col2:
             st.plotly_chart(create_enhanced_gauge(predictions.get('Audit_Readiness_Score', 0), "Audit Readiness"), 
                           use_container_width=True)
-        
         st.markdown('</div>', unsafe_allow_html=True)
     
     with col_viz2:
         st.markdown('<div class="section-container">', unsafe_allow_html=True)
-        st.subheader("🕸 Risk Profile Radar")
+        st.subheader("📈 Risk Profile Radar")
         st.plotly_chart(create_radar_chart(predictions), use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     
@@ -939,25 +762,24 @@ def show_dashboard():
 def show_ai_insights(assessment):
     """Display AI-generated insights and recommendations"""
     st.markdown('<div class="section-container">', unsafe_allow_html=True)
-    st.subheader("🧠 AI-Generated Insights")
+    st.subheader("🤖 AI-Generated Insights")
     
     # Priority Actions
-    if assessment['assessment']['priority_actions']:
-        st.markdown("#### ⚡ Priority Actions")
-        for i, action in enumerate(assessment['assessment']['priority_actions'], 1):
+    if assessment['priority_actions']:
+        st.markdown("#### ⚠️ Priority Actions")
+        for i, action in enumerate(assessment['priority_actions'], 1):
             st.markdown(f"""
             <div class="ai-insight critical">
-                <div class="ai-insight-header">🚨 Priority Action #{i}</div>
+                <div class="ai-insight-header">🔍 Priority Action #{i}</div>
                 <div class="ai-insight-content">{action}</div>
             </div>
             """, unsafe_allow_html=True)
     
     # Recommendations
-    if assessment['assessment']['recommendations']:
+    if assessment['recommendations']:
         st.markdown("#### 💡 Strategic Recommendations")
-        for i, rec in enumerate(assessment['assessment']['recommendations'], 1):
+        for i, rec in enumerate(assessment['recommendations'], 1):
             priority_class = "critical" if rec['priority'] == "CRITICAL" else "warning" if rec['priority'] == "HIGH" else "info"
-            
             st.markdown(f"""
             <div class="recommendation-card risk-{rec['priority'].lower()}">
                 <h4>{rec['title']}</h4>
@@ -972,33 +794,29 @@ def show_ai_insights(assessment):
             """, unsafe_allow_html=True)
     
     # Overall Risk Assessment
-    risk_level = assessment['assessment'].get('risk_level', 'MEDIUM')
+    risk_level = assessment.get('risk_level', 'MEDIUM')
     risk_class = f"risk-{risk_level.lower()}"
-    
     st.markdown(f"""
     <div class="ai-insight {risk_class.replace('risk-', '')}">
-        <div class="ai-insight-header">📊 Overall Risk Assessment</div>
+        <div class="ai-insight-header">🎯 Overall Risk Assessment</div>
         <div class="ai-insight-content">
             Your organization's overall risk level is classified as <strong>{risk_level}</strong> based on the composite analysis of all risk factors.
         </div>
     </div>
     """, unsafe_allow_html=True)
-    
     st.markdown('</div>', unsafe_allow_html=True)
 
 # FIXED: Complete risk assessment function with proper field mapping
 def show_risk_assessment():
     """Enhanced risk assessment form with better UX - FIXED VERSION"""
-    st.markdown('<h2 class="main-header">🎯 AI-Powered Risk Assessment</h2>', unsafe_allow_html=True)
+    st.markdown('<h2 class="main-header">📈 AI-Powered Risk Assessment</h2>', unsafe_allow_html=True)
     
     # Input Form
     with st.form("enhanced_risk_assessment_form", clear_on_submit=False):
         st.markdown('<div class="section-container">', unsafe_allow_html=True)
-        
         # Compliance Profile Section
         st.subheader("🛡️ Compliance Profile")
         col1, col2 = st.columns(2)
-        
         with col1:
             frameworks = st.multiselect(
                 "Applicable Compliance Frameworks",
@@ -1006,21 +824,18 @@ def show_risk_assessment():
                 default=["ISO27001", "NIST-CSF", "SOC2"],
                 help="Select all applicable regulatory frameworks"
             )
-            
             maturity = st.selectbox(
                 "Compliance Maturity Level", 
                 ["Initial", "Managed", "Defined", "Quantitatively Managed", "Optimizing"],
                 index=2,
                 help="Current maturity level of your compliance program"
             )
-            
             testing_frequency = st.selectbox(
                 "Control Testing Frequency",
                 ["Never", "Annually", "Bi-Annually", "Quarterly", "Monthly", "Weekly"],
                 index=3,
                 help="How frequently are controls tested"
             )
-        
         with col2:
             control_category = st.selectbox(
                 "Primary Control Category",
@@ -1028,14 +843,12 @@ def show_risk_assessment():
                 index=0,
                 help="Primary category of controls being assessed"
             )
-            
             control_status = st.select_slider(
                 "Control Implementation Status",
                 options=["0% Implemented", "25% Implemented", "50% Implemented", "75% Implemented", "100% Implemented"],
                 value="75% Implemented",
                 help="Overall implementation status of your controls"
             )
-            
             business_impact = st.selectbox(
                 "Business Impact Level",
                 ["Negligible", "Low", "Medium", "High", "Critical"],
@@ -1046,7 +859,6 @@ def show_risk_assessment():
         # Financial Profile Section
         st.subheader("💰 Financial Profile")
         col1, col2 = st.columns(2)
-        
         with col1:
             annual_revenue = st.number_input(
                 "Annual Revenue ($)", 
@@ -1055,13 +867,11 @@ def show_risk_assessment():
                 step=1000000,
                 help="Organization's annual revenue"
             )
-            
             penalty_risk = st.slider(
                 "Penalty Risk Assessment", 
                 0, 100, 45,
                 help="Potential regulatory penalty risk (0-100)"
             )
-        
         with col2:
             remediation_cost = st.number_input(
                 "Remediation Cost ($)", 
@@ -1070,7 +880,6 @@ def show_risk_assessment():
                 step=5000,
                 help="Expected cost to remediate identified gaps"
             )
-            
             incident_cost = st.number_input(
                 "Incident Cost Impact ($)", 
                 min_value=0, 
@@ -1080,9 +889,8 @@ def show_risk_assessment():
             )
         
         # Asset Risk Section
-        st.subheader("🔒 Asset Risk Profile")
+        st.subheader("📦 Asset Risk Profile")
         col1, col2 = st.columns(2)
-        
         with col1:
             asset_type = st.selectbox(
                 "Primary Asset Type",
@@ -1090,7 +898,6 @@ def show_risk_assessment():
                 index=1,  # Default to Database for higher risk
                 help="Type of primary assets being assessed"
             )
-            
             data_sensitivity = st.selectbox(
                 "Data Sensitivity Classification",
                 ["Public", "Internal", "Intellectual-Property", "Confidential", 
@@ -1099,14 +906,12 @@ def show_risk_assessment():
                 index=3,  # Default to Confidential
                 help="Highest classification of data processed"
             )
-            
             organizational_unit = st.selectbox(
                 "Organizational Unit",
                 ["IT", "Finance", "HR", "Operations", "Sales", "Marketing"],
                 index=0,
                 help="Primary organizational unit responsible"
             )
-        
         with col2:
             geographic_scope = st.multiselect(
                 "Geographic Scope",
@@ -1114,7 +919,6 @@ def show_risk_assessment():
                 default=["North America", "Europe"],
                 help="Regions where your organization operates"
             )
-            
             industry_sector = st.selectbox(
                 "Industry Sector",
                 ["Financial Services", "Healthcare", "Technology", "Manufacturing", "Retail", "Energy", "Government"],
@@ -1125,7 +929,6 @@ def show_risk_assessment():
         # Audit Profile Section
         st.subheader("📋 Audit Profile")
         col1, col2 = st.columns(2)
-        
         with col1:
             audit_type = st.selectbox(
                 "Audit Type",
@@ -1133,34 +936,29 @@ def show_risk_assessment():
                 index=0,
                 help="Type of audit being prepared for"
             )
-            
             audit_severity = st.selectbox(
                 "Audit Finding Severity",
                 ["Informational", "Low", "Medium", "High", "Critical"],
                 index=2,
                 help="Typical severity of audit findings"
             )
-            
             repeat_finding = st.checkbox(
                 "Repeat Finding", 
                 value=False,
                 help="Are there recurring audit findings?"
             )
-        
         with col2:
             compliance_owner = st.text_input(
                 "Compliance Owner", 
                 "John Smith",
                 help="Name of the compliance program owner"
             )
-            
             evidence_days = st.number_input(
                 "Evidence Freshness (Days)", 
                 min_value=0, 
                 value=30,
                 help="Average age of compliance evidence in days"
             )
-            
             audit_preparation = st.slider(
                 "Audit Preparation Score", 
                 0, 100, 75,
@@ -1170,7 +968,6 @@ def show_risk_assessment():
         # Incident Profile Section
         st.subheader("⚠️ Incident Profile")
         col1, col2 = st.columns(2)
-        
         with col1:
             incident_type_options = ["Data Breach", "System Outage", "Phishing", "Malware", "Ransomware", "DDoS", "Insider Threat"]
             incident_type_idx = st.selectbox(
@@ -1181,14 +978,12 @@ def show_risk_assessment():
                 help="Most likely type of security incident"
             )
             incident_type_selected = incident_type_options[incident_type_idx]
-            
             incident_severity = st.selectbox(
                 "Expected Incident Severity",
                 ["Low", "Medium", "High", "Critical"],
                 index=1,
                 help="Expected severity level of incidents"
             )
-        
         with col2:
             incident_notification = st.checkbox(
                 "Incident Notification Compliance", 
@@ -1214,24 +1009,30 @@ def show_risk_assessment():
                 st.rerun()
     
     if submitted:
-        with st.spinner("🤖 Analyzing your risk profile with AI..."):
+        with st.spinner("⚙️ Analyzing your risk profile with AI..."):
             # Enhanced loading with progress
             progress_bar = st.progress(0)
             status_text = st.empty()
             
+            # Check if engine is loaded
+            if not st.session_state.get('engine_loaded', False) or not st.session_state.scoring_engine:
+                st.error("❌ Critical error: AI models are not loaded. Please check system administrator.")
+                logger.error("Attempted to generate assessment with uninitialized scoring engine")
+                return
+                
             for i in range(100):
                 progress_bar.progress(i + 1)
                 if i < 25:
-                    status_text.text('🔍 Analyzing compliance posture...')
+                    status_text.text('📊 Analyzing compliance posture...')
                 elif i < 50:
                     status_text.text('💰 Calculating financial risk exposure...')
                 elif i < 75:
                     status_text.text('🛡️ Evaluating security controls...')
                 else:
-                    status_text.text('📊 Generating AI recommendations...')
+                    status_text.text('💡 Generating AI recommendations...')
                 time.sleep(0.02)
             
-            # FIXED: Prepare input data with correct field mapping for model compatibility
+            # FIXED: Prepare input data with correct field names for model compatibility
             input_data = {
                 # FIXED: Use exact field names expected by the model
                 'Control_ID': f"CTRL_{uuid.uuid4().hex[:8].upper()}",
@@ -1260,48 +1061,49 @@ def show_risk_assessment():
                 'Incident_Cost_Impact': float(incident_cost)
             }
             
-            # Get predictions
-            predictions = st.session_state.scoring_engine.predict_scores(input_data)
-            
-            # Generate assessment
-            assessment = st.session_state.scoring_engine.generate_assessment(input_data, predictions)
-            
-            # Store in session state
-            st.session_state.risk_assessment = {
-                'input_data': input_data,
-                'predictions': predictions,
-                'assessment': assessment,
-                'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            }
-            
-            # Add to history
-            prediction_record = {
-                "id": str(uuid.uuid4()),
-                "timestamp": datetime.now().isoformat(),
-                "input": input_data,
-                "predictions": predictions,
-                "assessment": assessment
-            }
-            
-            max_history = st.session_state.user_preferences.get("max_history", 100)
-            st.session_state.prediction_history = [prediction_record] + st.session_state.prediction_history[:max_history-1]
-            
-            progress_bar.progress(100)
-            status_text.text('✅ Assessment completed successfully!')
-            
-            time.sleep(1)
-            progress_bar.empty()
-            status_text.empty()
-            
-            st.balloons()
-            st.success("🎯 AI Risk Assessment completed successfully!")
+            try:
+                # Get predictions - this will fail if models aren't properly loaded
+                predictions = st.session_state.scoring_engine.predict_scores(input_data)
+                
+                # Generate assessment
+                assessment = st.session_state.scoring_engine.generate_assessment(input_data, predictions)
+                
+                # Store in session state
+                st.session_state.risk_assessment = {
+                    'input_data': input_data,
+                    'predictions': predictions,
+                    'assessment': assessment,
+                    'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                }
+                
+                # Add to history
+                prediction_record = {
+                    "id": str(uuid.uuid4()),
+                    "timestamp": datetime.now().isoformat(),
+                    "input": input_data,
+                    "predictions": predictions,
+                    "assessment": assessment
+                }
+                max_history = st.session_state.user_preferences.get("max_history", 100)
+                st.session_state.prediction_history = [prediction_record] + st.session_state.prediction_history[:max_history-1]
+                
+                progress_bar.progress(100)
+                status_text.text('✅ Assessment completed successfully!')
+                time.sleep(1)
+                progress_bar.empty()
+                status_text.empty()
+                st.balloons()
+                st.success("📈 AI Risk Assessment completed successfully!")
+            except Exception as e:
+                st.error(f"❌ Error generating risk assessment: {str(e)}")
+                st.error("Please contact your system administrator. Model files may be missing or corrupted.")
+                logger.error(f"Prediction error: {str(e)}")
 
 def show_benchmarking():
     """Enhanced benchmarking with industry insights"""
     st.markdown('<h2 class="main-header">📊 Industry Benchmarking</h2>', unsafe_allow_html=True)
-    
     if not st.session_state.risk_assessment:
-        st.info("📋 Complete a risk assessment first to see benchmark comparisons.")
+        st.info("ℹ️ Complete a risk assessment first to see benchmark comparisons.")
         return
     
     assessment = st.session_state.risk_assessment
@@ -1312,35 +1114,30 @@ def show_benchmarking():
     benchmark = st.session_state.scoring_engine.get_benchmark_data(industry)
     
     st.markdown('<div class="section-container">', unsafe_allow_html=True)
-    st.subheader(f"📈 {industry} Industry Benchmarks")
+    st.subheader(f"🏢 {industry} Industry Benchmarks")
     
     # Comparison metrics
     col1, col2, col3 = st.columns(3)
-    
     with col1:
         your_score = predictions.get('Compliance_Score', 0)
         benchmark_score = benchmark['compliance']
         delta = your_score - benchmark_score
-        
         st.metric(
             "Compliance Score", 
             f"{your_score:.1f}%", 
             f"{delta:+.1f} vs industry avg",
             delta_color="normal" if delta > 0 else "inverse"
         )
-    
     with col2:
         your_risk = predictions.get('Composite_Risk_Score', 0)
         benchmark_risk = benchmark['risk']
         delta = benchmark_risk - your_risk  # Lower risk is better
-        
         st.metric(
             "Risk Level", 
             f"{your_risk:.1f}%", 
             f"{delta:+.1f} vs industry avg",
             delta_color="normal" if delta > 0 else "inverse"
         )
-    
     with col3:
         st.metric(
             "Industry Maturity", 
@@ -1366,7 +1163,6 @@ def show_benchmarking():
             benchmark['risk'] * 0.6   # Estimated
         ]
     }
-    
     comparison_df = pd.DataFrame(comparison_data)
     chart_data = comparison_df.melt(
         id_vars="Metric", 
@@ -1374,7 +1170,6 @@ def show_benchmarking():
         var_name="Category", 
         value_name="Value"
     )
-    
     fig = px.bar(
         chart_data, 
         x="Value", 
@@ -1389,7 +1184,6 @@ def show_benchmarking():
         height=400,
         title="Performance vs Industry Benchmarks"
     )
-    
     fig.update_layout(
         plot_bgcolor='rgba(0,0,0,0)',
         paper_bgcolor='rgba(0,0,0,0)',
@@ -1397,19 +1191,17 @@ def show_benchmarking():
         yaxis_title="",
         xaxis_title="Score"
     )
-    
     st.plotly_chart(fig, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 def show_model_insights():
     """Enhanced model insights and performance metrics"""
-    st.markdown('<h2 class="main-header">🤖 Model Performance & Insights</h2>', unsafe_allow_html=True)
-    
+    st.markdown('<h2 class="main-header">⚙️ Model Performance & Insights</h2>', unsafe_allow_html=True)
     engine = st.session_state.scoring_engine
     
     # Model Performance Overview
     st.markdown('<div class="section-container">', unsafe_allow_html=True)
-    st.subheader("📈 Model Performance Metrics")
+    st.subheader("📊 Model Performance Metrics")
     
     if hasattr(engine, 'model_metadata') and engine.model_metadata:
         # Convert to DataFrame for display
@@ -1424,17 +1216,14 @@ def show_model_insights():
                 "Recall": f"{metrics.get('recall', 0):.3f}",
                 "F1 Score": f"{metrics.get('f1_score', 0):.3f}"
             })
-        
         metrics_df = pd.DataFrame(metrics_data)
         st.dataframe(metrics_df, width="stretch", hide_index=True)
         
         # Model performance visualization
         perf_col1, perf_col2 = st.columns(2)
-        
         with perf_col1:
             r2_scores = [float(metrics.get('test_r2', 0)) for metrics in engine.model_metadata.values()]
             model_names = [name.replace('_', ' ') for name in engine.model_metadata.keys()]
-            
             fig_r2 = px.bar(
                 x=model_names, 
                 y=r2_scores, 
@@ -1453,7 +1242,6 @@ def show_model_insights():
         
         with perf_col2:
             mae_scores = [float(metrics.get('test_mae', 0)) for metrics in engine.model_metadata.values()]
-            
             fig_mae = px.bar(
                 x=model_names, 
                 y=mae_scores, 
@@ -1469,6 +1257,8 @@ def show_model_insights():
                 plot_bgcolor="rgba(0,0,0,0)"
             )
             st.plotly_chart(fig_mae, use_container_width=True)
+    else:
+        st.error("❌ Model metadata not available. Please ensure models are properly loaded.")
     
     st.markdown('</div>', unsafe_allow_html=True)
     
@@ -1511,7 +1301,7 @@ def show_model_insights():
                     else:
                         st.dataframe(imp_df, use_container_width=True, hide_index=True)
     else:
-        st.info("Feature importance data not available. This may indicate the model is using mock data for demonstration.")
+        st.error("❌ Feature importance data not available. Please ensure models are properly loaded.")
     
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -1522,9 +1312,7 @@ def show_settings():
     # Theme Settings
     st.markdown('<div class="section-container">', unsafe_allow_html=True)
     st.subheader("🎨 Appearance")
-    
     col1, col2 = st.columns(2)
-    
     with col1:
         theme = st.selectbox(
             "Theme",
@@ -1533,7 +1321,6 @@ def show_settings():
             help="Select your preferred color scheme"
         )
         st.session_state.theme = theme
-    
     with col2:
         font_size = st.select_slider(
             "Font Size",
@@ -1541,28 +1328,23 @@ def show_settings():
             value="Medium",
             help="Adjust the application font size"
         )
-    
     st.markdown('</div>', unsafe_allow_html=True)
     
     # User Preferences
     st.markdown('<div class="section-container">', unsafe_allow_html=True)
-    st.subheader("📋 User Preferences")
-    
+    st.subheader("👤 User Preferences")
     pref_col1, pref_col2 = st.columns(2)
-    
     with pref_col1:
         notifications = st.toggle(
             "Notifications",
             value=st.session_state.user_preferences.get("notifications", True),
             help="Receive alerts for critical risk changes"
         )
-        
         auto_refresh = st.toggle(
             "Auto-refresh Dashboard",
             value=st.session_state.user_preferences.get("auto_refresh", False),
             help="Automatically refresh dashboard data"
         )
-    
     with pref_col2:
         max_history = st.slider(
             "Prediction History Limit",
@@ -1578,18 +1360,14 @@ def show_settings():
         "max_history": max_history,
         "theme": theme
     })
-    
     st.markdown('</div>', unsafe_allow_html=True)
     
     # System Information
     st.markdown('<div class="section-container">', unsafe_allow_html=True)
-    st.subheader("💻 System Information")
-    
+    st.subheader("ℹ️ System Information")
     sys_col1, sys_col2 = st.columns(2)
-    
     with sys_col1:
         st.markdown("#### Application Status")
-        
         if st.session_state.get('engine_loaded', False):
             st.success("✅ AI Models Loaded")
             if st.session_state.scoring_engine:
@@ -1600,7 +1378,6 @@ def show_settings():
         st.markdown("#### Prediction History")
         if st.session_state.prediction_history:
             st.metric("Total Assessments", len(st.session_state.prediction_history))
-            
             recent_predictions = len([
                 p for p in st.session_state.prediction_history 
                 if pd.to_datetime(p['timestamp']) > datetime.now() - timedelta(days=7)
@@ -1611,7 +1388,6 @@ def show_settings():
     
     with sys_col2:
         st.markdown("#### Data Management")
-        
         if st.button("💾 Export App State"):
             app_state = {
                 "prediction_history": st.session_state.prediction_history,
@@ -1643,33 +1419,27 @@ def show_settings():
 
 def show_incident_simulation():
     """Enhanced incident management simulation"""
-    st.markdown('<h2 class="main-header">🚨 Incident Management Simulation</h2>', unsafe_allow_html=True)
-    
+    st.markdown('<h2 class="main-header">🛡️ Incident Management Simulation</h2>', unsafe_allow_html=True)
     st.markdown('<div class="section-container">', unsafe_allow_html=True)
-    st.subheader("⚙️ Simulation Parameters")
-    
+    st.subheader("⚠️ Simulation Parameters")
     col1, col2 = st.columns(2)
-    
     with col1:
         incident_type = st.selectbox(
             "Incident Type", 
             ["Data Breach", "Ransomware Attack", "Phishing Campaign", "DDoS Attack", "Insider Threat"],
             help="Type of security incident to simulate"
         )
-        
         severity = st.selectbox(
             "Severity Level", 
             ["Critical", "High", "Medium", "Low"],
             index=1,
             help="Severity level of the simulated incident"
         )
-        
         detection_time = st.slider(
             "Detection Time (Minutes)", 
             1, 120, 45,
             help="Time to detect the incident after it begins"
         )
-    
     with col2:
         response_team = st.multiselect(
             "Response Team Members",
@@ -1677,13 +1447,11 @@ def show_incident_simulation():
             default=["Security Team", "IT Department"],
             help="Team members involved in incident response"
         )
-        
         communication_plan = st.selectbox(
             "Communication Plan",
             ["Internal Only", "Stakeholders", "Public Disclosure", "Regulatory Bodies"],
             help="Scope of external communications"
         )
-        
         recovery_time = st.slider(
             "Estimated Recovery Time (Hours)",
             1, 72, 8,
@@ -1693,7 +1461,6 @@ def show_incident_simulation():
     if st.button("🚀 Run Simulation", type="primary", use_container_width=True):
         with st.spinner("Running AI-powered incident simulation..."):
             time.sleep(2)
-            
             # Calculate effectiveness score
             effectiveness = 100 - (detection_time * 0.5 + recovery_time * 0.3)
             
@@ -1709,30 +1476,25 @@ def show_incident_simulation():
             
             # Display results
             st.subheader("📊 Simulation Results")
-            
             col_m1, col_m2, col_m3, col_m4 = st.columns(4)
-            
             with col_m1:
                 st.metric(
                     "Response Effectiveness", 
                     f"{effectiveness:.0f}%", 
                     delta="Good" if effectiveness > 70 else "Needs Improvement"
                 )
-            
             with col_m2:
                 st.metric(
                     "Detection Time", 
                     f"{detection_time} min", 
                     delta="Better than avg" if detection_time < 30 else "Worse than avg"
                 )
-            
             with col_m3:
                 st.metric(
                     "Recovery Time", 
                     f"{recovery_time} hrs", 
                     delta="Faster than avg" if recovery_time < 12 else "Slower than avg"
                 )
-            
             with col_m4:
                 impact_score = min(100, detection_time * 0.7 + recovery_time * 0.5)
                 st.metric(
@@ -1742,8 +1504,7 @@ def show_incident_simulation():
                 )
             
             # Generate recommendations
-            st.markdown("##### 🎯 AI Recommendations")
-            
+            st.markdown("##### 💡 AI Recommendations")
             if detection_time > 45:
                 st.markdown("""
                 <div class="ai-insight warning">
@@ -1755,7 +1516,7 @@ def show_incident_simulation():
             if "Legal Counsel" not in response_team and severity in ["Critical", "High"]:
                 st.markdown("""
                 <div class="ai-insight critical">
-                    <div class="ai-insight-header">🚨 Legal Team Involvement</div>
+                    <div class="ai-insight-header">⚖️ Legal Team Involvement</div>
                     <div class="ai-insight-content">High-severity incidents require legal counsel to ensure regulatory compliance and proper documentation.</div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -1763,7 +1524,7 @@ def show_incident_simulation():
             if recovery_time > 24:
                 st.markdown("""
                 <div class="ai-insight info">
-                    <div class="ai-insight-header">💡 Business Continuity</div>
+                    <div class="ai-insight-header">🔄 Business Continuity</div>
                     <div class="ai-insight-content">Extended recovery time indicates need for improved backup and disaster recovery procedures.</div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -1788,7 +1549,7 @@ def main():
     
     # Configure page
     st.set_page_config(
-        page_title="Enhanced GRC AI Platform v3.3 - Model Compatible",
+        page_title="Enhanced GRC AI Platform v3.4 - Real-Time Model Processing",
         page_icon="🛡️",
         layout="wide",
         initial_sidebar_state="expanded"
@@ -1800,13 +1561,17 @@ def main():
     # Initialize scoring engine
     if not st.session_state.get('engine_loaded', False):
         try:
-            with st.spinner("🤖 Loading AI models..."):
+            with st.spinner("⚙️ Loading AI models..."):
                 st.session_state.scoring_engine = EnhancedGRCScoreEngine()
                 st.session_state.engine_loaded = True
+                st.success("✅ AI Models successfully loaded")
         except Exception as e:
             st.session_state.engine_loaded = False
-            st.error("❌ Failed to initialize scoring engine.")
-            logger.error(f"Scoring engine initialization error: {str(e)}")
+            st.error(f"❌ Failed to initialize scoring engine: {str(e)}")
+            st.error("Please ensure all model files are present in the 'enhanced_grc_models' directory")
+            logger.critical(f"Critical failure in scoring engine initialization: {str(e)}")
+            # Don't proceed with mock data - show error and stop
+            st.stop()
     
     # Navigation sidebar
     with st.sidebar:
@@ -1816,59 +1581,47 @@ def main():
             <h2 style="margin: 0; font-size: 1.5rem; font-weight: 700;">Compliance AI Agent</h2>
         </div>
         """, unsafe_allow_html=True)
-        
         st.markdown("---")
-        
         # Enhanced page selection
         pages = {
             "📊 Executive Dashboard": "dashboard",
-            "🎯 Risk Assessment": "assessment", 
-            "📈 Benchmarking": "benchmarking",
-            "🚨 Incident Simulation": "incident",
-            "🤖 Model Insights": "models",
+            "📈 Risk Assessment": "assessment", 
+            "🏢 Benchmarking": "benchmarking",
+            "🛡️ Incident Simulation": "incident",
+            "⚙️ Model Insights": "models",
             "⚙️ Settings": "settings"
         }
-        
         selected_page = st.radio("Navigation", list(pages.keys()))
         page_key = pages[selected_page]
-        
         st.markdown("---")
-        
         # Quick preferences
         st.markdown("### ⚙️ Quick Settings")
-        
         notifications = st.toggle(
             "Notifications",
             value=st.session_state.user_preferences.get("notifications", True)
         )
-        
         auto_refresh = st.toggle(
             "Auto-refresh",
             value=st.session_state.user_preferences.get("auto_refresh", False)
         )
-        
         # Update preferences
         st.session_state.user_preferences.update({
             "notifications": notifications,
             "auto_refresh": auto_refresh
         })
-        
         st.markdown("---")
-        
         # System status
-        st.markdown("### 📊 System Status")
+        st.markdown("### ℹ️ System Status")
         if st.session_state.get('engine_loaded', False):
             st.success("✅ AI Models Ready")
         else:
             st.error("❌ Models Not Loaded")
-        
         st.info(f"📅 {datetime.now().strftime('%Y-%m-%d %H:%M')}")
-        
         # FIXED: Add model compatibility indicator
         st.markdown("---")
-        st.markdown("### 🔧 Model Compatibility")
-        st.success("✅ Model Compatible v3.3")
-        st.caption("All field mappings validated")
+        st.markdown("### 🔒 Model Compatibility")
+        st.success("✅ Real-Time Model Processing v3.4")
+        st.caption("Strict real-time processing - no mock data")
     
     # Main content routing
     if page_key == "dashboard":
