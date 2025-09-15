@@ -562,34 +562,46 @@ class EnhancedGRCScoreEngine:
         return df.astype(float, errors='ignore')
 
        def predict_scores(self, data: Dict[str, Any]) -> Dict[str, float]:
-        """
-        Predict using available models (real or mock).
-        Returns mapping {score_name: float_score}.
-        """
-        processed = self._preprocess_input(data)
-        predictions: Dict[str, float] = {}
-        # First try real models for scores they support
-        for name, model in self.models.items():
-            try:
-                # Use the real model
+    """
+    Predict using available models (real or mock).
+    Returns mapping {score_name: float_score}.
+    """
+    processed = self._preprocess_input(data)
+    predictions: Dict[str, float] = {}
+
+    # First try real models for scores they support
+    for name, model in self.models.items():
+        try:
+            # Extract features in correct order
+            if isinstance(self.feature_order, (list, tuple)):
+                features = [processed[f] for f in self.feature_order]
+                raw_pred = model.predict([features])
+            else:
                 raw_pred = model.predict(processed[self.feature_order])
-                # Process prediction
-                if isinstance(raw_pred, (list, tuple, np.ndarray, pd.Series)):
-                    val = float(raw_pred[0])
-                else:
-                    val = float(raw_pred)
-                predictions[name] = val
-            except Exception as e:
-                if self.STRICT_MODE:
-                    raise RuntimeError(f"Prediction failed for {name}: {e}")
-                else:
-                    logger.warning(f"Real model prediction failed for {name}: {e}. Using mock.")
-        # Fill in any missing scores with mock data
-        all_scores = list(self.REQUIRED_MODELS.keys())
-        for score_name in all_scores:
-            if score_name not in predictions:
-                predictions[score_name] = self._generate_mock_prediction(score_name, data)
-        return predictions
+
+            # Convert to float
+            if isinstance(raw_pred, (list, tuple, np.ndarray, pd.Series)):
+                val = float(raw_pred[0])
+            else:
+                val = float(raw_pred)
+
+            predictions[name] = val
+
+        except Exception as e:
+            if self.STRICT_MODE:
+                raise RuntimeError(f"Prediction failed for {name}: {e}")
+            else:
+                self.logger.warning(
+                    f"Real model prediction failed for {name}: {e}. Using mock."
+                )
+
+    # Fill in any missing scores with mock data
+    for score_name in self.REQUIRED_MODELS.keys():
+        if score_name not in predictions:
+            predictions[score_name] = self._generate_mock_prediction(score_name, data)
+
+    return predictions
+
 
     # REMOVED the erroneous duplicate method definition that contained the 'except' block
 
