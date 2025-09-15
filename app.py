@@ -1103,26 +1103,7 @@ def show_risk_assessment():
                     
             except Exception as e:
                 st.error(f"Assessment failed: {e}")
-    
-    # The rest of your show_risk_assessment function continues here...
-    # Input Form
-    with st.form("enhanced_risk_assessment_form", clear_on_submit=False):
-        st.markdown('<div class="section-container">', unsafe_allow_html=True)
-        
-        # Compliance Profile Section
-        st.subheader("🛡️ Compliance Profile")
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            frameworks = st.multiselect(
-                "Applicable Compliance Frameworks",
-                ["ISO27001", "NIST-CSF", "GDPR", "HIPAA", "PCI-DSS", "SOC2", "CIS-Controls", "SOX"],
-                default=["ISO27001", "NIST-CSF", "SOC2"],
-                help="Select all applicable regulatory frameworks"
-            )
-            
-            # ... rest of your form code continues exactly as before
-            # [ALL THE EXISTING FORM CODE REMAINS UNCHANGED]
+          
     
     # Input Form
       with st.form("enhanced_risk_assessment_form", clear_on_submit=False):
