@@ -561,14 +561,13 @@ class EnhancedGRCScoreEngine:
         # Return DataFrame with all available features (real models will subset as needed)
         return df.astype(float, errors='ignore')
 
-    def predict_scores(self, data: Dict[str, Any]) -> Dict[str, float]:
+       def predict_scores(self, data: Dict[str, Any]) -> Dict[str, float]:
         """
         Predict using available models (real or mock).
         Returns mapping {score_name: float_score}.
         """
         processed = self._preprocess_input(data)
         predictions: Dict[str, float] = {}
-        
         # First try real models for scores they support
         for name, model in self.models.items():
             try:
@@ -585,16 +584,15 @@ class EnhancedGRCScoreEngine:
                     raise RuntimeError(f"Prediction failed for {name}: {e}")
                 else:
                     logger.warning(f"Real model prediction failed for {name}: {e}. Using mock.")
-        
         # Fill in any missing scores with mock data
         all_scores = list(self.REQUIRED_MODELS.keys())
         for score_name in all_scores:
             if score_name not in predictions:
                 predictions[score_name] = self._generate_mock_prediction(score_name, data)
-                
         return predictions
 
-   
+    # REMOVED the erroneous duplicate method definition that contained the 'except' block
+
     def generate_assessment(self, input_data, predictions):
         """Generate comprehensive risk assessment"""
         assessment = {
