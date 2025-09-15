@@ -506,7 +506,7 @@ class EnhancedGRCScoreEngine:
             # ... other mock metadata
         }
         self.feature_importance = {
-            'Compliance_Score': [('Compliance_Maturity_Level', 0.20), ('Control_Testing_Frequency', 0.15), # ...],
+            'Compliance_Score': [('Compliance_Maturity_Level', 0.20), ('Control_Testing_Frequency', 0.15), ],
             # ... other feature importance
         }
         # Set feature order to match your compatibility mappings
