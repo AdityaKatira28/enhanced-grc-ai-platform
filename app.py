@@ -1017,96 +1017,8 @@ def show_ai_insights(assessment):
     
     st.markdown('</div>', unsafe_allow_html=True)
     
-def show_risk_assessment():
-    """Enhanced risk assessment form with better UX - FIXED VERSION"""
-    st.markdown('<h2 class="main-header">🎯 AI-Powered Risk Assessment</h2>', unsafe_allow_html=True)
-    
-    # --- File uploader: place at the top of show_risk_assessment() ---
-    uploaded_file = st.file_uploader("📁 Upload logs (CSV or JSON) to generate assessment", type=['csv', 'json'])
-    if uploaded_file is not None:
-        # Read file robustly
-        try:
-            if uploaded_file.name.lower().endswith('.csv'):
-                logs_df = pd.read_csv(uploaded_file)
-            else:
-                # Accept either JSON array or JSON lines
-                try:
-                    logs_df = pd.read_json(uploaded_file)
-                except ValueError:
-                    logs_df = pd.read_json(uploaded_file, lines=True)
-        except Exception as e:
-            st.error(f"Failed to read uploaded file: {e}")
-            logs_df = None
-        
-        if logs_df is not None and not logs_df.empty:
-            # Strategy: use the last row as the record to score
-            most_recent = logs_df.iloc[-1].to_dict()
-            
-            # Mapping function to convert log fields to model features
-            def map_log_to_features(log_row):
-                """Map your log schema to the expected feature names"""
-                return {
-                    # Use your existing compatibility mappings
-                    'Compliance_Maturity_Level': MATURITY_LEVEL_MAPPING.get(log_row.get('maturity', 'Defined'), 3),
-                    'Annual_Revenue': float(log_row.get('annual_revenue', 50000000)),
-                    'Evidence_Freshness_Days': float(log_row.get('evidence_freshness_days', 30)),
-                    'Audit_Preparation_Score': float(log_row.get('audit_prep_score', 0.75)),
-                    'Incident_Cost_Impact': float(log_row.get('incident_cost', 10000)),
-                    'Business_Impact': BUSINESS_IMPACT_MAPPING.get(log_row.get('business_impact', 'Medium'), 'Medium'),
-                    'Data_Sensitivity_Classification': log_row.get('data_sensitivity', 'Confidential'),
-                    'Control_Status_Distribution': CONTROL_STATUS_MAPPING.get(log_row.get('control_status', '75% Implemented'), 'Partially_Compliant'),
-                    # Add any other mappings needed
-                }
-            
-            input_data = map_log_to_features(most_recent)
-            
-            # Ensure the scoring engine exists in session_state
-            if 'scoring_engine' not in st.session_state:
-                try:
-                    st.session_state.scoring_engine = EnhancedGRCScoreEngine()
-                except Exception as e:
-                    st.error(f"Failed to initialize scoring engine: {e}")
-                    st.stop()
-            
-            # Predict using available models
-            try:
-                predictions = st.session_state.scoring_engine.predict_scores(input_data)
-                assessment = st.session_state.scoring_engine.generate_assessment(input_data, predictions)
-                
-                # Store results
-                st.session_state.risk_assessment = {
-                    'input_data': input_data,
-                    'predictions': predictions,
-                    'assessment': assessment,
-                    'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    'source': 'uploaded_logs'
-                }
-                
-                # Add to history
-                if 'prediction_history' not in st.session_state:
-                    st.session_state.prediction_history = []
-                    
-                st.session_state.prediction_history.append({
-                    "id": str(uuid.uuid4()),
-                    "timestamp": datetime.now().isoformat(),
-                    "input": input_data,
-                    "predictions": predictions,
-                    "assessment": assessment,
-                    "source": "uploaded_logs"
-                })
-                
-                # Show status based on engine mode
-                if hasattr(st.session_state.scoring_engine, 'mock_mode') and st.session_state.scoring_engine.mock_mode:
-                    st.warning("⚠️ Assessment generated using mock data (real models not available)")
-                else:
-                    st.success("✅ Assessment generated from uploaded logs using real models")
-                    
-            except Exception as e:
-                st.error(f"Assessment failed: {e}")
-          
-    
     # Input Form
-      with st.form("enhanced_risk_assessment_form", clear_on_submit=False):
+    with st.form("enhanced_risk_assessment_form", clear_on_submit=False):
         st.markdown('<div class="section-container">', unsafe_allow_html=True)
         
         # Compliance Profile Section
@@ -1134,6 +1046,7 @@ def show_risk_assessment():
                 index=3,
                 help="How frequently are controls tested"
             )
+
         
         with col2:
             control_category = st.selectbox(
