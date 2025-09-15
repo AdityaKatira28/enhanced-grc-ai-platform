@@ -1,0 +1,17 @@
+{
+  "model_name": "financial_risk_score_model",
+  "created_at": "2025-09-08T12:27:01.103871",
+  "scikit_learn_version": "1.7.1",
+  "model_type": "<class 'sklearn.pipeline.Pipeline'>",
+  "training_metrics": {
+    "train_mse": 3.6281362772575707e-06,
+    "test_mse": 1.918689119281238e-05,
+    "train_r2": 0.9999918165479842,
+    "test_r2": 0.9999570213350313,
+    "test_mae": 0.001453882948305917,
+    "best_config": "RandomForest_{'regressor__n_estimators': 100, 'regressor__min_samples_split': 2, 'regressor__min_samples_leaf': 1, 'regressor__max_depth': None}",
+    "best_cv_score": 0.9998665754192119,
+    "cv_r2_mean": 0.9999142755276591,
+    "cv_r2_std": 2.8562621771824157e-05
+  }
+}
