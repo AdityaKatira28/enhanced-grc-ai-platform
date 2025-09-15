@@ -20,6 +20,7 @@ from io import BytesIO
 import time
 import uuid
 import random
+from typing import Any, Dict, List
 
 # Configure logging
 logging.basicConfig(
@@ -561,49 +562,46 @@ class EnhancedGRCScoreEngine:
         # Return DataFrame with all available features (real models will subset as needed)
         return df.astype(float, errors='ignore')
 
-       def predict_scores(self, data: Dict[str, Any]) -> Dict[str, float]:
-    """
-    Predict using available models (real or mock).
-    Returns mapping {score_name: float_score}.
-    """
-    processed = self._preprocess_input(data)
-    predictions: Dict[str, float] = {}
+    def predict_scores(self, data: Dict[str, Any]) -> Dict[str, float]:
+        """
+        Predict using available models (real or mock).
+        Returns mapping {score_name: float_score}.
+        """
+        processed = self._preprocess_input(data)
+        predictions: Dict[str, float] = {}
 
-    # First try real models for scores they support
-    for name, model in self.models.items():
-        try:
-            # Extract features in correct order
-            if isinstance(self.feature_order, (list, tuple)):
-                features = [processed[f] for f in self.feature_order]
-                raw_pred = model.predict([features])
-            else:
-                raw_pred = model.predict(processed[self.feature_order])
+        # First try real models for scores they support
+        for name, model in self.models.items():
+            try:
+                if isinstance(self.feature_order, (list, tuple)) and len(self.feature_order) > 0:
+                    # Select DataFrame with required columns in order
+                    X = processed[self.feature_order]
+                else:
+                    X = processed
+                raw_pred = model.predict(X)
 
-            # Convert to float
-            if isinstance(raw_pred, (list, tuple, np.ndarray, pd.Series)):
-                val = float(raw_pred[0])
-            else:
-                val = float(raw_pred)
+                # Convert to float
+                if isinstance(raw_pred, (list, tuple, np.ndarray, pd.Series)):
+                    val = float(raw_pred[0])
+                else:
+                    val = float(raw_pred)
 
-            predictions[name] = val
+                predictions[name] = val
 
-        except Exception as e:
-            if self.STRICT_MODE:
-                raise RuntimeError(f"Prediction failed for {name}: {e}")
-            else:
-                self.logger.warning(
-                    f"Real model prediction failed for {name}: {e}. Using mock."
-                )
+            except Exception as e:
+                if self.STRICT_MODE:
+                    raise RuntimeError(f"Prediction failed for {name}: {e}")
+                else:
+                    logger.warning(
+                        f"Real model prediction failed for {name}: {e}. Using mock."
+                    )
 
-    # Fill in any missing scores with mock data
-    for score_name in self.REQUIRED_MODELS.keys():
-        if score_name not in predictions:
-            predictions[score_name] = self._generate_mock_prediction(score_name, data)
+        # Fill in any missing scores with mock data
+        for score_name in self.REQUIRED_MODELS.keys():
+            if score_name not in predictions:
+                predictions[score_name] = self._generate_mock_prediction(score_name, data)
 
-    return predictions
-
-
-    # REMOVED the erroneous duplicate method definition that contained the 'except' block
+        return predictions
 
     def generate_assessment(self, input_data, predictions):
         """Generate comprehensive risk assessment"""
@@ -669,32 +667,6 @@ class EnhancedGRCScoreEngine:
                     variance += 12
         
         return max(0, min(100, base + variance))
-    
-    # FIXED: Updated preprocessing with correct field names
-    def _preprocess_input(self, data):
-        """Enhanced input preprocessing - FIXED VERSION"""
-        if isinstance(data, dict):
-            df = pd.DataFrame([data])
-        else:
-            df = data.copy()
-        
-        # FIXED: Create derived features using correct field names
-        if 'Annual_Revenue' in df.columns and 'Penalty_Risk_Assessment' in df.columns:
-            safe_revenue = df['Annual_Revenue'].replace(0, 1)
-            df['Risk_Exposure_Ratio'] = df['Penalty_Risk_Assessment'] / safe_revenue
-        
-        if 'Penalty_Risk_Assessment' in df.columns and 'Remediation_Cost' in df.columns:
-            safe_remediation_cost = df['Remediation_Cost'].replace(0, 1)
-            df['ROI_Potential'] = (df['Penalty_Risk_Assessment'] - df['Remediation_Cost']) / safe_remediation_cost
-            df['ROI_Potential'] = df['ROI_Potential'].fillna(0).clip(-10, 10)
-        
-        # FIXED: Add Revenue_Category creation
-        if 'Annual_Revenue' in df.columns:
-            df['Revenue_Category'] = pd.cut(df['Annual_Revenue'], 
-                                           bins=[0, 10e6, 100e6, 1e9, 10e9, np.inf],
-                                           labels=['Startup', 'SME', 'Mid-Market', 'Large', 'Enterprise'])
-        
-        return df
     
     def _fallback_predictions(self):
         """Fallback predictions if all else fails"""
@@ -1085,91 +1057,7 @@ def show_ai_insights(assessment):
     
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # --- File uploader: place before the manual Streamlit form in show_risk_assessment() ---
-uploaded_file = st.file_uploader("📁 Upload logs (CSV or JSON) to generate assessment", type=['csv', 'json'])
-if uploaded_file is not None:
-    # Read file robustly
-    try:
-        if uploaded_file.name.lower().endswith('.csv'):
-            logs_df = pd.read_csv(uploaded_file)
-        else:
-            # Accept either JSON array or JSON lines
-            try:
-                logs_df = pd.read_json(uploaded_file)
-            except ValueError:
-                logs_df = pd.read_json(uploaded_file, lines=True)
-    except Exception as e:
-        st.error(f"Failed to read uploaded file: {e}")
-        logs_df = None
-    
-    if logs_df is not None and not logs_df.empty:
-        # Strategy: use the last row as the record to score
-        most_recent = logs_df.iloc[-1].to_dict()
-        
-        # Mapping function to convert log fields to model features
-        def map_log_to_features(log_row):
-            """Map your log schema to the expected feature names"""
-            return {
-                # Use your existing compatibility mappings
-                'Compliance_Maturity_Level': MATURITY_LEVEL_MAPPING.get(log_row.get('maturity', 'Defined'), 3),
-                'Annual_Revenue': float(log_row.get('annual_revenue', 50000000)),
-                'Evidence_Freshness_Days': float(log_row.get('evidence_freshness_days', 30)),
-                'Audit_Preparation_Score': float(log_row.get('audit_prep_score', 0.75)),
-                'Incident_Cost_Impact': float(log_row.get('incident_cost', 10000)),
-                'Business_Impact': BUSINESS_IMPACT_MAPPING.get(log_row.get('business_impact', 'Medium'), 'Medium'),
-                'Data_Sensitivity_Classification': log_row.get('data_sensitivity', 'Confidential'),
-                'Control_Status_Distribution': CONTROL_STATUS_MAPPING.get(log_row.get('control_status', '75% Implemented'), 'Partially_Compliant'),
-                # Add any other mappings needed
-            }
-        
-        input_data = map_log_to_features(most_recent)
-        
-        # Ensure the scoring engine exists in session_state
-        if 'scoring_engine' not in st.session_state:
-            try:
-                # Set STRICT_MODE based on environment
-                EnhancedGRCScoreEngine.STRICT_MODE = False  # Set to True in production
-                st.session_state.scoring_engine = EnhancedGRCScoreEngine()
-            except Exception as e:
-                st.error(f"Failed to initialize scoring engine: {e}")
-                st.stop()
-        
-        # Predict using available models
-        try:
-            predictions = st.session_state.scoring_engine.predict_scores(input_data)
-            assessment = st.session_state.scoring_engine.generate_assessment(input_data, predictions)
-            
-            # Store results
-            st.session_state.risk_assessment = {
-                'input_data': input_data,
-                'predictions': predictions,
-                'assessment': assessment,
-                'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                'source': 'uploaded_logs'
-            }
-            
-            # Add to history
-            if 'prediction_history' not in st.session_state:
-                st.session_state.prediction_history = []
-                
-            st.session_state.prediction_history.append({
-                "id": str(uuid.uuid4()),
-                "timestamp": datetime.now().isoformat(),
-                "input": input_data,
-                "predictions": predictions,
-                "assessment": assessment,
-                "source": "uploaded_logs"
-            })
-            
-            # Show status based on engine mode
-            if hasattr(st.session_state.scoring_engine, 'mock_mode') and st.session_state.scoring_engine.mock_mode:
-                st.warning("⚠️ Assessment generated using mock data (real models not available)")
-            else:
-                st.success("✅ Assessment generated from uploaded logs using real models")
-                
-        except Exception as e:
-            st.error(f"Assessment failed: {e}")
-
+    # --- File uploader moved into show_risk_assessment() ---
 # FIXED: Complete risk assessment function with proper field mapping
 def show_risk_assessment():
     """Enhanced risk assessment form with better UX - FIXED VERSION"""
@@ -1704,13 +1592,13 @@ def show_settings():
     st.markdown('<h2 class="main-header">⚙️ Application Settings</h2>', unsafe_allow_html=True)
     
     st.markdown("#### Model Configuration")
-model_mode = st.radio(
-    "Model Operation Mode",
-    ["Development (mock fallback)", "Production (strict real models)"],
-    index=0 if not EnhancedGRCScoreEngine.STRICT_MODE else 1,
-    help="Choose how the scoring engine should handle missing models"
-)
-EnhancedGRCScoreEngine.STRICT_MODE = (model_mode == "Production (strict real models)")
+    model_mode = st.radio(
+        "Model Operation Mode",
+        ["Development (mock fallback)", "Production (strict real models)"],
+        index=0 if not EnhancedGRCScoreEngine.STRICT_MODE else 1,
+        help="Choose how the scoring engine should handle missing models"
+    )
+    EnhancedGRCScoreEngine.STRICT_MODE = (model_mode == "Production (strict real models)")
 
     # Theme Settings
     st.markdown('<div class="section-container">', unsafe_allow_html=True)
