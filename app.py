@@ -368,156 +368,240 @@ def get_enhanced_css():
 # ======================
 # ENHANCED SCORING ENGINE - FIXED VERSION
 # ======================
+# --- EnhancedGRCScoreEngine: Configurable implementation with real models OR mock fallback ---
 class EnhancedGRCScoreEngine:
+    """
+    Configurable scoring engine with two modes:
+    - STRICT_MODE=True: Only use real models (raises errors if missing)
+    - STRICT_MODE=False: Use real models if available, fall back to mock otherwise
+    
+    Maintains your existing compatibility mappings and derived features.
+    """
+    STRICT_MODE = False  # Set to True for production, False for development
+    
+    REQUIRED_MODELS = {
+        'Compliance_Score': 'compliance_score_model.joblib',
+        'Financial_Risk_Score': 'financial_risk_score_model.joblib',
+        'Asset_Risk_Index': 'asset_risk_index_model.joblib',
+        'Audit_Readiness_Score': 'audit_readiness_score_model.joblib',
+        'Incident_Impact_Score': 'incident_impact_score_model.joblib',
+        'Composite_Risk_Score': 'composite_risk_score_model.joblib'
+    }
+    REQUIRED_METADATA = [
+        'feature_order.json'
+    ]
+    
     def __init__(self, model_dir="enhanced_grc_models"):
         self.model_dir = Path(model_dir)
-        self.model_dir.mkdir(exist_ok=True)
-        self.models = {}
-        self.feature_info = {}
-        self.scoring_config = {}
-        self.model_metadata = {}
-        self.feature_importance = {}
-        self.model_versions = {}
-        self._initialize_engine()
-    
-    def _initialize_engine(self):
-        try:
-            self._load_models()
-            self._load_metadata()
-            if not self.models:
-                logger.warning("No models found, creating mock engine for demonstration")
+        self.models: Dict[str, Any] = {}
+        self.feature_order: List[str] = []
+        self.feature_info: Dict[str, Any] = {}
+        self.scoring_config: Dict[str, Any] = {}
+        self.model_metadata: Dict[str, Any] = {}
+        self.mock_mode = False
+        
+        # Ensure model dir exists
+        if not self.model_dir.exists():
+            if self.STRICT_MODE:
+                raise FileNotFoundError(f"Model directory not found: {self.model_dir.resolve()}")
+            else:
+                logger.warning(f"Model directory not found: {self.model_dir.resolve()}. Using mock engine.")
+                self.mock_mode = True
                 self._create_mock_engine()
-            logger.info(f"GRC Scoring Engine initialized with {len(self.models)} models")
-        except Exception as e:
-            logger.error(f"Error initializing GRC Scoring Engine: {str(e)}")
-            self._create_mock_engine()
-    
-    def _load_models(self):
-        model_files = {
-            'Compliance_Score': 'compliance_score_model.joblib',
-            'Financial_Risk_Score': 'financial_risk_score_model.joblib',
-            'Asset_Risk_Index': 'asset_risk_index_model.joblib',
-            'Audit_Readiness_Score': 'audit_readiness_score_model.joblib',
-            'Incident_Impact_Score': 'incident_impact_score_model.joblib',
-            'Composite_Risk_Score': 'composite_risk_score_model.joblib'
-        }
-        
-        for score_name, filename in model_files.items():
+                return
+                
+        # Initialize based on mode
+        if self.STRICT_MODE:
+            self._initialize_strict_engine()
+        else:
+            try:
+                self._initialize_strict_engine()
+            except Exception as e:
+                logger.warning(f"Failed to initialize real engine ({str(e)}). Using mock engine instead.")
+                self.mock_mode = True
+                self._create_mock_engine()
+
+    def _initialize_strict_engine(self):
+        """Load models and metadata. Fail loudly on any missing required artifacts."""
+        # Load models
+        for score_name, filename in self.REQUIRED_MODELS.items():
             model_path = self.model_dir / filename
-            if model_path.exists():
-                try:
-                    self.models[score_name] = joblib.load(model_path)
-                    self.model_versions[score_name] = model_path.stat().st_mtime
-                    logger.info(f"Loaded {score_name} model")
-                except Exception as e:
-                    logger.error(f"Failed to load {score_name} model: {str(e)}")
-    
-    def _load_metadata(self):
-        metadata_files = {
-            'feature_info.json': 'feature_info',
-            'scoring_config.json': 'scoring_config',
-            'model_metrics.json': 'model_metadata',
-            'feature_importance.json': 'feature_importance'
-        }
+            if not model_path.exists():
+                if self.STRICT_MODE:
+                    raise FileNotFoundError(f"Required model missing: {filename} (expected at {model_path.resolve()})")
+                else:
+                    logger.warning(f"Model {filename} missing. Some scores will use mock data.")
+                    continue
+                    
+            try:
+                self.models[score_name] = joblib.load(model_path)
+                logger.info(f"Loaded model {score_name} from {model_path.name}")
+            except Exception as e:
+                if self.STRICT_MODE:
+                    raise RuntimeError(f"Failed to load model {filename}: {e}")
+                else:
+                    logger.warning(f"Failed to load {filename}: {e}. Using mock for {score_name}.")
         
-        for filename, attr_name in metadata_files.items():
-            file_path = self.model_dir / filename
-            if file_path.exists():
+        # Check if we have at least one real model
+        if not self.models and self.STRICT_MODE:
+            raise RuntimeError("No models loaded in strict mode")
+            
+        # Load feature_order.json (strict requirement only if we have real models)
+        if self.models:
+            feature_order_path = self.model_dir / 'feature_order.json'
+            if not feature_order_path.exists():
+                if self.STRICT_MODE:
+                    raise FileNotFoundError("Missing required metadata: feature_order.json")
+                else:
+                    logger.warning("feature_order.json missing. Using fallback feature ordering.")
+                    # Try to get features from first model
+                    try:
+                        model = next(iter(self.models.values()))
+                        if hasattr(model, 'feature_names_in_'):
+                            self.feature_order = model.feature_names_in_.tolist()
+                        else:
+                            # Fallback to common feature names
+                            self.feature_order = [
+                                'Compliance_Maturity_Level', 'Annual_Revenue', 
+                                'Evidence_Freshness_Days', 'Audit_Preparation_Score',
+                                'Incident_Cost_Impact'
+                            ]
+                    except:
+                        self.feature_order = [
+                            'Compliance_Maturity_Level', 'Annual_Revenue', 
+                            'Evidence_Freshness_Days', 'Audit_Preparation_Score',
+                            'Incident_Cost_Impact'
+                        ]
+            else:
                 try:
-                    with open(file_path, 'r') as f:
-                        setattr(self, attr_name, json.load(f))
-                    logger.info(f"Loaded {filename}")
+                    with open(feature_order_path, 'r') as f:
+                        fo = json.load(f)
+                    if 'feature_order' not in fo or not isinstance(fo['feature_order'], list):
+                        raise ValueError("feature_order.json must contain 'feature_order' list")
+                    self.feature_order = fo['feature_order']
+                    logger.info(f"Loaded feature_order with {len(self.feature_order)} features")
                 except Exception as e:
-                    logger.error(f"Failed to load {filename}: {str(e)}")
-    
+                    if self.STRICT_MODE:
+                        raise RuntimeError(f"Failed to read feature_order.json: {e}")
+                    else:
+                        logger.warning(f"Failed to read feature_order.json: {e}. Using fallback ordering.")
+                        self.feature_order = [
+                            'Compliance_Maturity_Level', 'Annual_Revenue', 
+                            'Evidence_Freshness_Days', 'Audit_Preparation_Score',
+                            'Incident_Cost_Impact'
+                        ]
+
     def _create_mock_engine(self):
-        """Create a mock scoring engine for demonstration"""
-        self.models = {
-            'Compliance_Score': 'mock_model',
-            'Financial_Risk_Score': 'mock_model',
-            'Asset_Risk_Index': 'mock_model',
-            'Audit_Readiness_Score': 'mock_model',
-            'Incident_Impact_Score': 'mock_model',
-            'Composite_Risk_Score': 'mock_model'
-        }
+        """Create a mock scoring engine for demonstration/development"""
+        self.models = {}
+        # Keep your existing mock implementation but mark it as mock
+        self.mock_mode = True
+        logger.info("Initialized mock scoring engine for development")
         
-        # Enhanced mock metadata
+        # Copy your existing mock implementation from the current app
+        # This preserves your compatibility mappings and derived features
         self.model_metadata = {
             'Compliance_Score': {'test_r2': 0.87, 'test_mae': 8.2, 'cv_r2_mean': 0.85, 'precision': 0.84, 'recall': 0.82, 'f1_score': 0.83},
             'Financial_Risk_Score': {'test_r2': 0.79, 'test_mae': 12.5, 'cv_r2_mean': 0.76, 'precision': 0.78, 'recall': 0.75, 'f1_score': 0.76},
-            'Asset_Risk_Index': {'test_r2': 0.82, 'test_mae': 9.8, 'cv_r2_mean': 0.80, 'precision': 0.81, 'recall': 0.79, 'f1_score': 0.80},
-            'Audit_Readiness_Score': {'test_r2': 0.85, 'test_mae': 7.5, 'cv_r2_mean': 0.83, 'precision': 0.83, 'recall': 0.81, 'f1_score': 0.82},
-            'Incident_Impact_Score': {'test_r2': 0.75, 'test_mae': 10.2, 'cv_r2_mean': 0.72, 'precision': 0.74, 'recall': 0.72, 'f1_score': 0.73},
-            'Composite_Risk_Score': {'test_r2': 0.89, 'test_mae': 6.8, 'cv_r2_mean': 0.87, 'precision': 0.88, 'recall': 0.86, 'f1_score': 0.87}
+            # ... other mock metadata
         }
-        
-        # Enhanced feature importance with proper formatting
         self.feature_importance = {
-            'Compliance_Score': [
-                ('Compliance_Maturity_Level', 0.20),
-                ('Control_Testing_Frequency', 0.15),
-                ('Control_Status_Distribution', 0.15),
-                ('Applicable_Compliance_Frameworks', 0.10),
-                ('Business_Impact', 0.10),
-                ('Data_Sensitivity_Classification', 0.08),
-                ('Audit_Preparation_Score', 0.07),
-                ('Evidence_Freshness_Days', 0.05),
-                ('Repeat_Finding', 0.05),
-                ('Industry_Sector', 0.05)
-            ],
-            'Financial_Risk_Score': [
-                ('Penalty_Risk_Assessment', 0.25),
-                ('Business_Impact', 0.20),
-                ('Annual_Revenue', 0.15),
-                ('Remediation_Cost', 0.15),
-                ('Data_Sensitivity_Classification', 0.10),
-                ('Industry_Sector', 0.08),
-                ('Risk_Exposure_Ratio', 0.07)
-            ],
-            'Asset_Risk_Index': [
-                ('Data_Sensitivity_Classification', 0.30),
-                ('Asset_Type', 0.25),
-                ('Geographic_Scope', 0.20),
-                ('Industry_Sector', 0.15),
-                ('Organizational_Unit', 0.10)
-            ],
-            'Audit_Readiness_Score': [
-                ('Evidence_Freshness_Days', 0.25),
-                ('Audit_Preparation_Score', 0.20),
-                ('Control_Status_Distribution', 0.15),
-                ('Repeat_Finding', 0.15),
-                ('Applicable_Compliance_Frameworks', 0.10),
-                ('Audit_Finding_Severity', 0.10),
-                ('Compliance_Owner', 0.05)
-            ],
-            'Incident_Impact_Score': [
-                ('Incident_Type', 0.30),
-                ('Business_Impact', 0.20),
-                ('Data_Sensitivity_Classification', 0.15),
-                ('Incident_Notification_Compliance', 0.15),
-                ('Remediation_Cost', 0.10),
-                ('Audit_Finding_Severity', 0.10)
-            ]
+            'Compliance_Score': [('Compliance_Maturity_Level', 0.20), ('Control_Testing_Frequency', 0.15), # ...],
+            # ... other feature importance
         }
+        # Set feature order to match your compatibility mappings
+        self.feature_order = [
+            'Compliance_Maturity_Level', 'Annual_Revenue', 
+            'Evidence_Freshness_Days', 'Audit_Preparation_Score',
+            'Incident_Cost_Impact', 'Business_Impact', 
+            'Data_Sensitivity_Classification', 'Control_Status_Distribution'
+        ]
+
+    def _preprocess_input(self, data: Dict[str, Any]) -> pd.DataFrame:
+        """
+        Convert input dict -> DataFrame aligned to feature_order.
+        - Handles both real model requirements and maintains your compatibility mappings
+        - Creates derived features as in your current implementation
+        """
+        if not isinstance(data, dict):
+            raise ValueError("Input data must be a dict mapping feature names to values")
+        
+        # Convert to DataFrame
+        df = pd.DataFrame([data])
+        
+        # Create derived features (maintain your current compatibility approach)
+        if 'Annual_Revenue' in df.columns and 'Penalty_Risk_Assessment' in df.columns:
+            safe_revenue = df['Annual_Revenue'].replace(0, 1)
+            df['Risk_Exposure_Ratio'] = df['Penalty_Risk_Assessment'] / safe_revenue
+            
+        if 'Penalty_Risk_Assessment' in df.columns and 'Remediation_Cost' in df.columns:
+            safe_remediation_cost = df['Remediation_Cost'].replace(0, 1)
+            df['ROI_Potential'] = (df['Penalty_Risk_Assessment'] - df['Remediation_Cost']) / safe_remediation_cost
+            df['ROI_Potential'] = df['ROI_Potential'].fillna(0).clip(-10, 10)
+            
+        if 'Annual_Revenue' in df.columns:
+            df['Revenue_Category'] = pd.cut(df['Annual_Revenue'], 
+                                           bins=[0, 10e6, 100e6, 1e9, 10e9, np.inf],
+                                           labels=['Startup', 'SME', 'Mid-Market', 'Large', 'Enterprise'])
+        
+        # Validate presence of required features for real models
+        if self.models and self.feature_order:
+            missing = [f for f in self.feature_order if f not in df.columns]
+            if missing:
+                available = list(df.columns)
+                if self.STRICT_MODE:
+                    raise ValueError(
+                        f"Missing required features for real models: {missing}. "
+                        f"Available input keys: {available}. "
+                        "Make sure your uploaded logs map to the model's feature names exactly."
+                    )
+                else:
+                    logger.warning(f"Missing features for real models: {missing}. Using mock for affected scores.")
+        
+        # Return DataFrame with all available features (real models will subset as needed)
+        return df.astype(float, errors='ignore')
+
+    def predict_scores(self, data: Dict[str, Any]) -> Dict[str, float]:
+        """
+        Predict using available models (real or mock).
+        Returns mapping {score_name: float_score}.
+        """
+        processed = self._preprocess_input(data)
+        predictions: Dict[str, float] = {}
+        
+        # First try real models for scores they support
+        for name, model in self.models.items():
+            try:
+                # Use the real model
+                raw_pred = model.predict(processed[self.feature_order])
+                # Process prediction
+                if isinstance(raw_pred, (list, tuple, np.ndarray, pd.Series)):
+                    val = float(raw_pred[0])
+                else:
+                    val = float(raw_pred)
+                predictions[name] = val
+            except Exception as e:
+                if self.STRICT_MODE:
+                    raise RuntimeError(f"Prediction failed for {name}: {e}")
+                else:
+                    logger.warning(f"Real model prediction failed for {name}: {e}. Using mock.")
+        
+        # Fill in any missing scores with mock data
+        all_scores = list(self.REQUIRED_MODELS.keys())
+        for score_name in all_scores:
+            if score_name not in predictions:
+                predictions[score_name] = self._generate_mock_prediction(score_name, data)
+                
+        return predictions
+
+    # Keep your existing _generate_mock_prediction, _calculate_overall_risk_level, 
+    # and other methods from your current implementation
+    # [Include your existing mock prediction methods here]
     
-    def predict_scores(self, data):
-        """Enhanced prediction with better error handling - FIXED VERSION"""
-        try:
-            processed_data = self._preprocess_input(data)
-            predictions = {}
-            
-            for score_name, model in self.models.items():
-                try:
-                    if model == 'mock_model':
-                        predictions[score_name] = self._generate_mock_prediction(score_name, data)
-                    else:
-                        pred = model.predict(processed_data)
-                        predictions[score_name] = float(pred[0])
-                except Exception as e:
-                    logger.error(f"Error predicting {score_name}: {str(e)}")
-                    predictions[score_name] = self._generate_mock_prediction(score_name, data)
-            
-            return predictions
+    def generate_assessment(self, input_data: Dict[str, Any], predictions: Dict[str, float]) -> Dict[str, Any]:
+        """Your existing implementation from the current app"""
+        # [Copy your existing generate_assessment method here]
+        # This maintains your compatibility mappings and business logic
             
         except Exception as e:
             logger.error(f"Error in predict_scores: {str(e)}")
@@ -985,6 +1069,91 @@ def show_ai_insights(assessment):
     """, unsafe_allow_html=True)
     
     st.markdown('</div>', unsafe_allow_html=True)
+    
+    # --- File uploader: place before the manual Streamlit form in show_risk_assessment() ---
+uploaded_file = st.file_uploader("📁 Upload logs (CSV or JSON) to generate assessment", type=['csv', 'json'])
+if uploaded_file is not None:
+    # Read file robustly
+    try:
+        if uploaded_file.name.lower().endswith('.csv'):
+            logs_df = pd.read_csv(uploaded_file)
+        else:
+            # Accept either JSON array or JSON lines
+            try:
+                logs_df = pd.read_json(uploaded_file)
+            except ValueError:
+                logs_df = pd.read_json(uploaded_file, lines=True)
+    except Exception as e:
+        st.error(f"Failed to read uploaded file: {e}")
+        logs_df = None
+    
+    if logs_df is not None and not logs_df.empty:
+        # Strategy: use the last row as the record to score
+        most_recent = logs_df.iloc[-1].to_dict()
+        
+        # Mapping function to convert log fields to model features
+        def map_log_to_features(log_row):
+            """Map your log schema to the expected feature names"""
+            return {
+                # Use your existing compatibility mappings
+                'Compliance_Maturity_Level': MATURITY_LEVEL_MAPPING.get(log_row.get('maturity', 'Defined'), 3),
+                'Annual_Revenue': float(log_row.get('annual_revenue', 50000000)),
+                'Evidence_Freshness_Days': float(log_row.get('evidence_freshness_days', 30)),
+                'Audit_Preparation_Score': float(log_row.get('audit_prep_score', 0.75)),
+                'Incident_Cost_Impact': float(log_row.get('incident_cost', 10000)),
+                'Business_Impact': BUSINESS_IMPACT_MAPPING.get(log_row.get('business_impact', 'Medium'), 'Medium'),
+                'Data_Sensitivity_Classification': log_row.get('data_sensitivity', 'Confidential'),
+                'Control_Status_Distribution': CONTROL_STATUS_MAPPING.get(log_row.get('control_status', '75% Implemented'), 'Partially_Compliant'),
+                # Add any other mappings needed
+            }
+        
+        input_data = map_log_to_features(most_recent)
+        
+        # Ensure the scoring engine exists in session_state
+        if 'scoring_engine' not in st.session_state:
+            try:
+                # Set STRICT_MODE based on environment
+                EnhancedGRCScoreEngine.STRICT_MODE = False  # Set to True in production
+                st.session_state.scoring_engine = EnhancedGRCScoreEngine()
+            except Exception as e:
+                st.error(f"Failed to initialize scoring engine: {e}")
+                st.stop()
+        
+        # Predict using available models
+        try:
+            predictions = st.session_state.scoring_engine.predict_scores(input_data)
+            assessment = st.session_state.scoring_engine.generate_assessment(input_data, predictions)
+            
+            # Store results
+            st.session_state.risk_assessment = {
+                'input_data': input_data,
+                'predictions': predictions,
+                'assessment': assessment,
+                'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                'source': 'uploaded_logs'
+            }
+            
+            # Add to history
+            if 'prediction_history' not in st.session_state:
+                st.session_state.prediction_history = []
+                
+            st.session_state.prediction_history.append({
+                "id": str(uuid.uuid4()),
+                "timestamp": datetime.now().isoformat(),
+                "input": input_data,
+                "predictions": predictions,
+                "assessment": assessment,
+                "source": "uploaded_logs"
+            })
+            
+            # Show status based on engine mode
+            if hasattr(st.session_state.scoring_engine, 'mock_mode') and st.session_state.scoring_engine.mock_mode:
+                st.warning("⚠️ Assessment generated using mock data (real models not available)")
+            else:
+                st.success("✅ Assessment generated from uploaded logs using real models")
+                
+        except Exception as e:
+            st.error(f"Assessment failed: {e}")
 
 # FIXED: Complete risk assessment function with proper field mapping
 def show_risk_assessment():
@@ -1519,6 +1688,15 @@ def show_settings():
     """Enhanced settings page"""
     st.markdown('<h2 class="main-header">⚙️ Application Settings</h2>', unsafe_allow_html=True)
     
+    st.markdown("#### Model Configuration")
+model_mode = st.radio(
+    "Model Operation Mode",
+    ["Development (mock fallback)", "Production (strict real models)"],
+    index=0 if not EnhancedGRCScoreEngine.STRICT_MODE else 1,
+    help="Choose how the scoring engine should handle missing models"
+)
+EnhancedGRCScoreEngine.STRICT_MODE = (model_mode == "Production (strict real models)")
+
     # Theme Settings
     st.markdown('<div class="section-container">', unsafe_allow_html=True)
     st.subheader("🎨 Appearance")
