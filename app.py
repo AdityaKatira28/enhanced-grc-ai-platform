@@ -594,18 +594,23 @@ class EnhancedGRCScoreEngine:
                 
         return predictions
 
-    # Keep your existing _generate_mock_prediction, _calculate_overall_risk_level, 
-    # and other methods from your current implementation
-    # [Include your existing mock prediction methods here]
-    
-    def generate_assessment(self, input_data: Dict[str, Any], predictions: Dict[str, float]) -> Dict[str, Any]:
-        """Your existing implementation from the current app"""
-        # [Copy your existing generate_assessment method here]
-        # This maintains your compatibility mappings and business logic
-            
-        except Exception as e:
-            logger.error(f"Error in predict_scores: {str(e)}")
-            return self._fallback_predictions()
+   
+    def generate_assessment(self, input_data, predictions):
+        """Generate comprehensive risk assessment"""
+        assessment = {
+            "timestamp": datetime.now().isoformat(),
+            "predictions": predictions,
+            "priority_actions": [],
+            "recommendations": [],
+            "risk_level": self._calculate_overall_risk_level(predictions)
+        }
+        # Generate recommendations based on scores
+        recommendations = self._generate_recommendations(predictions, input_data)
+        assessment['recommendations'] = recommendations
+        # Generate priority actions
+        priority_actions = self._generate_priority_actions(predictions)
+        assessment['priority_actions'] = priority_actions
+        return assessment
     
     # FIXED: Updated mock prediction with correct field names
     def _generate_mock_prediction(self, score_name, data):
