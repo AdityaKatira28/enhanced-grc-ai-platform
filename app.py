@@ -1,5 +1,4 @@
-# Enhanced GRC AI Platform - Real Model Only v4.0
-# Removed all mock data, relies solely on .joblib models
+
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -21,18 +20,14 @@ import time
 import uuid
 import random
 
-# Configure logging
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger("Enhanced_GRC_AI_Platform")
 
-# ======================
-# MODEL COMPATIBILITY MAPPINGS
-# ======================
 
-# Value mappings to match model expectations
 MATURITY_LEVEL_MAPPING = {
     "Initial": 1,
     "Managed": 2, 
@@ -84,9 +79,7 @@ AUDIT_SEVERITY_MAPPING = {
     "Critical": "Critical"
 }
 
-# ======================
-# THEME CONFIGURATION
-# ======================
+
 THEMES = {
     "light": {
         "bg": "linear-gradient(135deg, #f5f7fa 0%, #e4e7f1 100%)",
@@ -114,9 +107,7 @@ THEMES = {
     }
 }
 
-# ======================
-# SESSION STATE INIT
-# ======================
+
 def init_session_state():
     if 'theme' not in st.session_state:
         st.session_state.theme = "light"
@@ -136,9 +127,7 @@ def init_session_state():
     if 'risk_assessment' not in st.session_state:
         st.session_state.risk_assessment = None
 
-# ======================
-# ENHANCED CSS
-# ======================
+
 def get_enhanced_css():
     theme = THEMES[st.session_state.theme]
     return f"""
@@ -372,9 +361,7 @@ def get_enhanced_css():
     </style>
     """
 
-# ======================
-# REAL MODEL ONLY SCORING ENGINE
-# ======================
+
 class RealModelGRCEngine:
     def __init__(self, model_dir="enhanced_grc_models"):
         self.model_dir = Path(model_dir)
@@ -624,9 +611,7 @@ class RealModelGRCEngine:
         
         return benchmarks.get(industry, benchmarks.get('Technology'))
 
-# ======================
-# VISUALIZATION FUNCTIONS
-# ======================
+
 def create_enhanced_gauge(value, title, min_val=0, max_val=100):
     """Create enhanced gauge chart"""
     if value >= 75:
@@ -756,9 +741,7 @@ def create_feature_importance_chart(features, title):
     
     return fig
 
-# ======================
-# ERROR HANDLING COMPONENTS
-# ======================
+
 def show_model_error():
     """Show error when models are not available"""
     st.markdown("""
@@ -778,9 +761,7 @@ def show_model_error():
     </div>
     """, unsafe_allow_html=True)
 
-# ======================
-# PAGE FUNCTIONS
-# ======================
+
 def show_dashboard():
     """Enhanced dashboard with comprehensive insights - Real models only"""
     st.markdown('<h2 class="main-header">📊 Executive Dashboard</h2>', unsafe_allow_html=True)
@@ -844,7 +825,7 @@ def show_dashboard():
     
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # Visualizations
+   
     col_viz1, col_viz2 = st.columns(2)
     
     with col_viz1:
@@ -867,7 +848,7 @@ def show_dashboard():
         st.plotly_chart(create_radar_chart(predictions), use_container_width=True)
         st.markdown('</div>', unsafe_allow_html=True)
     
-    # AI Insights and Recommendations
+    
     show_ai_insights(assessment)
 
 def show_ai_insights(assessment):
@@ -875,7 +856,7 @@ def show_ai_insights(assessment):
     st.markdown('<div class="section-container">', unsafe_allow_html=True)
     st.subheader("🧠 AI-Generated Insights")
     
-    # Priority Actions
+  
     if assessment['assessment']['priority_actions']:
         st.markdown("#### ⚡ Priority Actions")
         for i, action in enumerate(assessment['assessment']['priority_actions'], 1):
@@ -886,7 +867,7 @@ def show_ai_insights(assessment):
             </div>
             """, unsafe_allow_html=True)
     
-    # Recommendations
+    
     if assessment['assessment']['recommendations']:
         st.markdown("#### 💡 Strategic Recommendations")
         for i, rec in enumerate(assessment['assessment']['recommendations'], 1):
@@ -905,7 +886,7 @@ def show_ai_insights(assessment):
             </div>
             """, unsafe_allow_html=True)
     
-    # Overall Risk Assessment
+    
     risk_level = assessment['assessment'].get('risk_level', 'MEDIUM')
     risk_class = f"risk-{risk_level.lower()}"
     
@@ -928,7 +909,7 @@ def show_risk_assessment():
         show_model_error()
         return
     
-    # Input Form
+    
     with st.form("real_model_risk_assessment_form", clear_on_submit=False):
         st.markdown('<div class="section-container">', unsafe_allow_html=True)
         
@@ -1016,7 +997,7 @@ def show_risk_assessment():
                 help="Potential cost impact of security incidents"
             )
         
-        # Asset Risk Section
+        
         st.subheader("🔐 Asset Risk Profile")
         col1, col2 = st.columns(2)
         
@@ -1059,7 +1040,7 @@ def show_risk_assessment():
                 help="Your organization's primary industry"
             )
         
-        # Audit Profile Section
+       
         st.subheader("📋 Audit Profile")
         col1, col2 = st.columns(2)
         
@@ -1104,7 +1085,7 @@ def show_risk_assessment():
                 help="Current level of audit preparation (0-100)"
             )
         
-        # Incident Profile Section
+       
         st.subheader("⚠️ Incident Profile")
         col1, col2 = st.columns(2)
         
@@ -1135,7 +1116,7 @@ def show_risk_assessment():
         
         st.markdown('</div>', unsafe_allow_html=True)
         
-        # Submit button
+    
         col1, col2, col3, col4 = st.columns(4)
         with col1:
             submitted = st.form_submit_button("🚀 Generate Assessment", type="primary", use_container_width=True)
@@ -1169,7 +1150,7 @@ def show_risk_assessment():
                         status_text.text('📊 Generating model-based recommendations...')
                     time.sleep(0.02)
                 
-                # Prepare input data with correct field mapping for model compatibility
+             
                 input_data = {
                     'Control_ID': f"CTRL_{uuid.uuid4().hex[:8].upper()}",
                     'Applicable_Compliance_Frameworks': ','.join(frameworks),
@@ -1197,13 +1178,13 @@ def show_risk_assessment():
                     'Incident_Cost_Impact': float(incident_cost)
                 }
                 
-                # Get predictions from real models
+             
                 predictions = st.session_state.scoring_engine.predict_scores(input_data)
                 
-                # Generate assessment
+              
                 assessment = st.session_state.scoring_engine.generate_assessment(input_data, predictions)
                 
-                # Store in session state
+               
                 st.session_state.risk_assessment = {
                     'input_data': input_data,
                     'predictions': predictions,
@@ -1211,7 +1192,7 @@ def show_risk_assessment():
                     'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 }
                 
-                # Add to history
+              
                 prediction_record = {
                     "id": str(uuid.uuid4()),
                     "timestamp": datetime.now().isoformat(),
@@ -1253,13 +1234,13 @@ def show_benchmarking():
     predictions = assessment['predictions']
     industry = assessment['input_data']['Industry_Sector']
     
-    # Get benchmark data
+  
     benchmark = st.session_state.scoring_engine.get_benchmark_data(industry)
     
     st.markdown('<div class="section-container">', unsafe_allow_html=True)
     st.subheader(f"📈 {industry} Industry Benchmarks")
     
-    # Comparison metrics
+  
     col1, col2, col3 = st.columns(3)
     
     with col1:
@@ -1293,7 +1274,7 @@ def show_benchmarking():
             "Benchmark level"
         )
     
-    # Benchmark comparison chart
+   
     comparison_data = {
         'Metric': ['Compliance Score', 'Financial Risk', 'Asset Risk', 'Audit Readiness', 'Incident Impact'],
         'Your Organization': [
@@ -1356,12 +1337,12 @@ def show_model_insights():
     
     engine = st.session_state.scoring_engine
     
-    # Model Performance Overview
+    
     st.markdown('<div class="section-container">', unsafe_allow_html=True)
     st.subheader("📈 Model Performance Metrics")
     
     if hasattr(engine, 'model_metadata') and engine.model_metadata:
-        # Convert to DataFrame for display
+        
         metrics_data = []
         for model_name, metrics in engine.model_metadata.items():
             metrics_data.append({
@@ -1377,7 +1358,7 @@ def show_model_insights():
         metrics_df = pd.DataFrame(metrics_data)
         st.dataframe(metrics_df, use_container_width=True, hide_index=True)
         
-        # Model performance visualization
+       
         perf_col1, perf_col2 = st.columns(2)
         
         with perf_col1:
@@ -1423,7 +1404,7 @@ def show_model_insights():
     
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # Feature Importance Analysis
+   
     st.markdown('<div class="section-container">', unsafe_allow_html=True)
     st.subheader("🔍 Feature Importance Analysis")
     
@@ -1493,7 +1474,7 @@ def show_settings():
     
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # User Preferences
+   
     st.markdown('<div class="section-container">', unsafe_allow_html=True)
     st.subheader("📋 User Preferences")
     
@@ -1520,7 +1501,7 @@ def show_settings():
             help="Maximum number of predictions to keep in history"
         )
     
-    # Update preferences
+    
     st.session_state.user_preferences.update({
         "notifications": notifications,
         "auto_refresh": auto_refresh,
@@ -1530,7 +1511,7 @@ def show_settings():
     
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # System Information
+   
     st.markdown('<div class="section-container">', unsafe_allow_html=True)
     st.subheader("💻 System Information")
     
@@ -1700,7 +1681,7 @@ def show_incident_simulation():
                 
                 effectiveness = max(10, min(100, effectiveness))
                 
-                # Display results
+               
                 st.subheader("📊 Real Model Simulation Results")
                 
                 col_m1, col_m2, col_m3, col_m4 = st.columns(4)
@@ -1734,7 +1715,7 @@ def show_incident_simulation():
                         delta="Low" if impact_score < 50 else "Moderate" if impact_score < 70 else "High"
                     )
                 
-                # Generate real model-based recommendations
+              
                 st.markdown("##### 🎯 Model-Based Recommendations")
                 
                 if detection_time > 45:
@@ -1761,7 +1742,7 @@ def show_incident_simulation():
                     </div>
                     """, unsafe_allow_html=True)
                 
-                # Overall assessment based on real model output
+                
                 if effectiveness > 80:
                     st.success("✅ Excellent incident response simulation! Real model analysis shows strong preparedness.")
                 elif effectiveness > 60:
@@ -1775,15 +1756,13 @@ def show_incident_simulation():
     
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ======================
-# MAIN APPLICATION
-# ======================
+
 def main():
     """Main application function - Real models only"""
-    # Initialize session state
+   
     init_session_state()
     
-    # Configure page
+   
     st.set_page_config(
         page_title="Enhanced GRC AI Platform v4.0 - Real Models Only",
         page_icon="🛡️",
@@ -1791,10 +1770,10 @@ def main():
         initial_sidebar_state="expanded"
     )
     
-    # Load CSS
+
     st.markdown(get_enhanced_css(), unsafe_allow_html=True)
     
-    # Initialize scoring engine with real models only
+
     if not st.session_state.get('engine_loaded', False):
         try:
             with st.spinner("🤖 Loading real AI models..."):
@@ -1806,7 +1785,7 @@ def main():
             st.error(f"❌ Failed to initialize real model engine: {str(e)}")
             logger.error(f"Real model engine initialization error: {str(e)}")
     
-    # Navigation sidebar
+   
     with st.sidebar:
         st.markdown("""
         <div style="text-align: center; margin-bottom: 1.5rem;">
@@ -1818,7 +1797,7 @@ def main():
         
         st.markdown("---")
         
-        # Enhanced page selection
+       
         pages = {
             "📊 Executive Dashboard": "dashboard",
             "🎯 Risk Assessment": "assessment", 
@@ -1833,7 +1812,7 @@ def main():
         
         st.markdown("---")
         
-        # Quick preferences
+       
         st.markdown("### ⚙️ Quick Settings")
         
         notifications = st.toggle(
@@ -1846,7 +1825,7 @@ def main():
             value=st.session_state.user_preferences.get("auto_refresh", False)
         )
         
-        # Update preferences
+       
         st.session_state.user_preferences.update({
             "notifications": notifications,
             "auto_refresh": auto_refresh
@@ -1854,7 +1833,7 @@ def main():
         
         st.markdown("---")
         
-        # System status
+       
         st.markdown("### 📊 System Status")
         if st.session_state.get('engine_loaded', False) and st.session_state.scoring_engine.is_loaded:
             st.success("✅ Real AI Models Ready")
@@ -1865,7 +1844,7 @@ def main():
         
         st.info(f"📅 {datetime.now().strftime('%Y-%m-%d %H:%M')}")
         
-        # Model status indicator
+      
         st.markdown("---")
         st.markdown("### 🔧 Model Status")
         if st.session_state.get('engine_loaded', False) and st.session_state.scoring_engine.is_loaded:
@@ -1875,7 +1854,7 @@ def main():
             st.error("❌ Models Not Loaded")
             st.caption("Real .joblib files required")
     
-    # Main content routing
+    
     if page_key == "dashboard":
         show_dashboard()
     elif page_key == "assessment":
@@ -1889,7 +1868,7 @@ def main():
     elif page_key == "settings":
         show_settings()
     
-    # Footer
+    
     st.markdown("""
     <div style="text-align: center; padding: 2rem; margin-top: 3rem; border-top: 1px solid rgba(0,0,0,0.1);">
         <div style="color: #6b7280; font-size: 0.85rem;">
