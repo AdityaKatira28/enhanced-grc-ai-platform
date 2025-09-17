@@ -2,6 +2,7 @@
 streamlit==1.49.1
 pandas==2.3.2          # bumped
 numpy==2.3.2
+streamlit-autorefresh==1.0.1
 
 # Machine Learning and Scientific Computing
 scikit-learn==1.7.1
@@ -26,4 +27,3 @@ scipy==1.16.1
 matplotlib==3.10.6     
 seaborn==0.13.2        
 
-streamlit-autorefresh==0.1.1
